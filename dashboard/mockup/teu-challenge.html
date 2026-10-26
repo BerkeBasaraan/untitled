@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>TEU Challenge Maketi</title>
+<style>
+  /* Power BI canvas: 1920x1080 (16:9). Tüm ölçüler px ve 8'in katlarına yakın grid. */
+  :root {
+    --canvas: #F3F2F1;        /* Power BI sayfa arka planı */
+    --tile: #FFFFFF;          /* görsel arka planı */
+    --border: #E1DFDD;
+    --text-primary: #252423;  /* Power BI varsayılan metin */
+    --text-secondary: #605E5C;
+    --text-muted: #8A8886;
+    --grid: #EDEBE9;
+    --primary: #2A78D6;       /* ana veri / lider */
+    --me: #EB6834;            /* "Sen" vurgusu */
+    --context: #C8C6C4;       /* diğer kişiler */
+    --good: #107C10;
+    --bad: #C50F1F;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    width: 1920px; height: 1080px; overflow: hidden;
+    background: var(--canvas); color: var(--text-primary);
+    font-family: "Segoe UI", Inter, sans-serif; position: relative;
+  }
+  .tile {
+    position: absolute; background: var(--tile); border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 1px 4px rgba(0,0,0,.04);
+    padding: 16px 20px;
+  }
+  .tile h2 { font-size: 16px; font-weight: 600; line-height: 22px; }
+  .tile .sub { font-size: 12px; color: var(--text-secondary); line-height: 16px; margin-top: 2px; }
+  .flat { background: transparent; box-shadow: none; padding: 0; }
+
+  /* Header */
+  .title h1 { font-size: 26px; font-weight: 700; line-height: 34px; }
+  .title p { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+  .nav { display: flex; gap: 8px; align-items: center; height: 100%; }
+  .nav button {
+    font: inherit; font-size: 14px; font-weight: 600; height: 40px; width: 132px;
+    border-radius: 6px; border: 1px solid var(--border); background: var(--tile); color: var(--text-secondary);
+  }
+  .nav button.on { background: var(--text-primary); color: #fff; border-color: var(--text-primary); }
+  .slicer { padding: 8px 14px; }
+  .slicer label { font-size: 11px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+  .slicer .dd {
+    margin-top: 4px; height: 26px; display: flex; justify-content: space-between; align-items: center;
+    font-size: 14px; border-bottom: 1px solid var(--text-muted);
+  }
+  .slicer .dd::after { content: "⌄"; font-size: 16px; color: var(--text-secondary); margin-top: -6px; }
+  .updated { padding: 10px 16px; display: flex; align-items: center; gap: 12px; }
+  .updated .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--good); box-shadow: 0 0 0 4px #DFF6DD; flex: none; }
+  .updated b { font-size: 14px; display: block; }
+  .updated span { font-size: 12px; color: var(--text-secondary); }
+
+  /* KPI kartları */
+  .kpi .label { font-size: 14px; font-weight: 600; color: var(--text-secondary); }
+  .kpi .value { font-size: 48px; font-weight: 700; line-height: 60px; margin-top: 8px; letter-spacing: -.01em; }
+  .kpi .value small { font-size: 22px; font-weight: 600; color: var(--text-secondary); margin-left: 6px; }
+  .kpi .ref { font-size: 14px; color: var(--text-secondary); margin-top: 6px; display: flex; align-items: center; gap: 8px; }
+  .kpi .ref .up { color: var(--good); font-weight: 700; }
+  .kpi.me { border-top: 4px solid var(--me); padding-top: 12px; }
+  .bar-track { height: 8px; border-radius: 4px; background: var(--grid); margin-top: 12px; position: relative; overflow: hidden; }
+  .bar-track i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--primary); border-radius: 4px; }
+
+  /* Tablo */
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+  th { text-align: left; font-weight: 600; color: var(--text-secondary); font-size: 12px; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+  td { padding: 0 8px; height: 26px; border-bottom: 1px solid var(--grid); }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tr.me td { background: #FDF0EA; font-weight: 600; }
+  .footer { position: absolute; left: 24px; right: 24px; top: 1048px; font-size: 12px; color: var(--text-muted); display: flex; justify-content: space-between; }
+
+  svg text { font-family: "Segoe UI", Inter, sans-serif; }
+
+  /* Spec katmanı (?spec) */
+  .chip { display: none; }
+  body.spec .tile, body.spec .flat { outline: 2px dashed #8764B8; outline-offset: 2px; }
+  body.spec .chip {
+    display: block; position: absolute; z-index: 10; background: #8764B8; color: #fff;
+    font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 4px; white-space: nowrap;
+    font-family: "JetBrains Mono", monospace;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="tile flat title" style="left:24px;top:24px;width:520px;height:64px" data-spec="Metin kutusu">
+  <h1>TEU Challenge · Ekim 2026</h1>
+  <p>Bireysel TEU liderlik tablosu · Hedef: kişi başı 250 TEU</p>
+</div>
+<div class="tile flat" style="left:560px;top:24px;width:420px;height:64px" data-spec="Sayfa gezgini">
+  <div class="nav"><button class="on">Liderlik</button><button>Bölgeler</button><button>Detay</button></div>
+</div>
+<div class="tile slicer" style="left:1012px;top:24px;width:260px;height:64px" data-spec="Dilimleyici">
+  <label>Dönem</label><div class="dd">Ekim 2026</div>
+</div>
+<div class="tile slicer" style="left:1288px;top:24px;width:260px;height:64px" data-spec="Dilimleyici">
+  <label>Bölge</label><div class="dd">Tümü</div>
+</div>
+<div class="tile updated" style="left:1564px;top:24px;width:332px;height:64px" data-spec="Kart">
+  <div class="dot"></div>
+  <div><b>Son güncelleme 14:32</b><span>26.10.2026 · 5 dk'da bir yenilenir</span></div>
+</div>
+
+<!-- KPI KARTLARI -->
+<div class="tile kpi me" style="left:24px;top:104px;width:456px;height:160px" data-spec="Kart (yeni) · [Benim TEU]">
+  <div class="label">Senin TEU'n</div>
+  <div class="value">186<small>/ 250</small></div>
+  <div class="bar-track"><i style="width:74.4%"></i></div>
+  <div class="ref">Hedefin %74'ü · 64 TEU kaldı</div>
+</div>
+<div class="tile kpi" style="left:496px;top:104px;width:456px;height:160px" data-spec="Kart (yeni) · [Sıra]">
+  <div class="label">Sıran</div>
+  <div class="value">3.<small>/ 42 kişi</small></div>
+  <div class="ref"><span class="up">▲ 1</span> dünden bu yana (4. → 3.)</div>
+</div>
+<div class="tile kpi" style="left:968px;top:104px;width:456px;height:160px" data-spec="Kart (yeni) · [Üsttekiyle Fark]">
+  <div class="label">2. sıraya kalan</div>
+  <div class="value">14<small>TEU</small></div>
+  <div class="ref">Önündeki: Mehmet Tunç · 200 TEU</div>
+</div>
+<div class="tile kpi" style="left:1440px;top:104px;width:456px;height:160px" data-spec="Kart (yeni) · [Bugün TEU]">
+  <div class="label">Bugün</div>
+  <div class="value">+12<small>TEU (sen)</small></div>
+  <div class="ref">Şirket geneli: +310 TEU · 27 giriş</div>
+</div>
+
+<!-- ANA SATIR -->
+<div class="tile" id="lb" style="left:24px;top:280px;width:928px;height:540px" data-spec="Kümelenmiş çubuk grafik · Üst N=15 · koşullu renk">
+  <h2>Lider Ayşe Kaya (240 TEU) · Sen 3. sıradasın</h2>
+  <div class="sub">Kişi bazında toplam TEU · kesikli çizgi: 250 TEU hedef</div>
+  <svg id="lbsvg" width="888" height="468" style="margin-top:6px"></svg>
+</div>
+<div class="tile" id="race" style="left:968px;top:280px;width:928px;height:540px" data-spec="Çizgi grafik · Kümülatif TEU · İlk 5">
+  <h2>Ayşe Kaya farkı açıyor, 2. sıra için yarış kızışıyor</h2>
+  <div class="sub">İlk 5 kişinin kümülatif TEU'su · 1–26 Ekim</div>
+  <svg id="racesvg" width="888" height="468" style="margin-top:6px"></svg>
+</div>
+
+<!-- ALT SATIR -->
+<div class="tile" style="left:24px;top:836px;width:1240px;height:200px" data-spec="Tablo · Son 4 giriş · Yükleme zamanına göre azalan">
+  <h2>Son girişler</h2>
+  <table>
+    <thead><tr><th style="width:180px">Yükleme zamanı</th><th>Kişi</th><th>Bölge</th><th>Yönetici</th><th class="num">TEU</th></tr></thead>
+    <tbody>
+      <tr><td>26.10 14:28</td><td>Burak Yıldız</td><td>Akdeniz</td><td>Serkan Uysal</td><td class="num">8</td></tr>
+      <tr class="me"><td>26.10 14:11</td><td>★ Can Demir (Sen)</td><td>Marmara</td><td>Leyla Güneş</td><td class="num">12</td></tr>
+      <tr><td>26.10 13:52</td><td>Ayşe Kaya</td><td>Marmara</td><td>Leyla Güneş</td><td class="num">20</td></tr>
+      <tr><td>26.10 13:40</td><td>Selin Aydın</td><td>Karadeniz</td><td>Murat Akın</td><td class="num">4</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="tile" style="left:1280px;top:836px;width:616px;height:200px" data-spec="Kümelenmiş çubuk grafik · Bölge">
+  <h2>Marmara bölgesi önde</h2>
+  <svg id="regsvg" width="576" height="140" style="margin-top:6px"></svg>
+</div>
+
+<div class="footer">
+  <span>Kaynak: Challenge tablosu (DirectQuery) · Otomatik sayfa yenileme: 5 dk · TEU = yirmi fit eşdeğer birim</span>
+  <span>Vurgulanan satır, raporu açan kullanıcıdır: USERPRINCIPALNAME()</span>
+</div>
+
+<script>
+const NS = "http://www.w3.org/2000/svg";
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function el(tag, attrs, parent, text) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (text != null) e.textContent = text;
+  parent.appendChild(e); return e;
+}
+// Ucu yuvarlak (4px), tabana sabit yatay çubuk
+function hbar(svg, x, y, w, h, fill) {
+  const r = Math.min(4, w / 2, h / 2);
+  el("path", { d: `M${x},${y} H${x + w - r} Q${x + w},${y} ${x + w},${y + r} V${y + h - r} Q${x + w},${y + h} ${x + w - r},${y + h} H${x} Z`, fill }, svg);
+}
+
+const people = [
+  ["Ayşe Kaya", 240], ["Mehmet Tunç", 200], ["Can Demir", 186, true], ["Elif Şahin", 172],
+  ["Burak Yıldız", 165], ["Zeynep Arslan", 151], ["Emre Koç", 140], ["Selin Aydın", 133],
+  ["Kerem Öztürk", 121], ["Deniz Çelik", 114], ["Ozan Kurt", 102], ["Merve Polat", 96],
+  ["Hakan Erdem", 88], ["Gizem Acar", 79], ["Tolga Şen", 71],
+];
+
+// Liderlik tablosu
+(() => {
+  const svg = document.getElementById("lbsvg");
+  const W = 888, H = 468, left = 200, right = 56, top = 24, axisH = 24;
+  const max = 260, pw = W - left - right, rowH = (H - top - axisH) / people.length, bh = 20;
+  const sx = v => left + v / max * pw;
+  [0, 50, 100, 150, 200, 250].forEach(t => {
+    el("line", { x1: sx(t), x2: sx(t), y1: top, y2: H - axisH, stroke: css("--grid") }, svg);
+    el("text", { x: sx(t), y: H - 6, "text-anchor": "middle", "font-size": 12, fill: css("--text-muted") }, svg, t);
+  });
+  people.forEach(([name, v, me], i) => {
+    const y = top + i * rowH + (rowH - bh) / 2;
+    if (me) el("rect", { x: 0, y: top + i * rowH + 1, width: W, height: rowH - 2, rx: 4, fill: "#FDF0EA" }, svg);
+    el("text", { x: 0, y: y + bh / 2 + 5, "font-size": 14, fill: css("--text-muted"), "font-variant-numeric": "tabular-nums" }, svg, (i + 1) + ".");
+    el("text", { x: 28, y: y + bh / 2 + 5, "font-size": 14, "font-weight": me ? 700 : 400, fill: css("--text-primary") }, svg, me ? "★ " + name + " (Sen)" : name);
+    hbar(svg, left, y, sx(v) - left, bh, me ? css("--me") : i === 0 ? css("--primary") : css("--context"));
+    // Hedef çizgisine yakın değerler çubuğun içine yazılır
+    const inside = v > 230;
+    el("text", { x: inside ? sx(v) - 8 : sx(v) + 8, y: y + bh / 2 + 5, "text-anchor": inside ? "end" : "start", "font-size": 14, "font-weight": me || i === 0 ? 700 : 400, fill: inside ? "#fff" : css("--text-primary") }, svg, v);
+  });
+  el("line", { x1: sx(250), x2: sx(250), y1: top, y2: H - axisH, stroke: css("--text-secondary"), "stroke-width": 1.5, "stroke-dasharray": "5 4" }, svg);
+  el("text", { x: sx(250), y: 12, "text-anchor": "middle", "font-size": 12, fill: css("--text-secondary"), "font-weight": 600 }, svg, "Hedef 250");
+})();
+
+// Kümülatif yarış
+(() => {
+  const svg = document.getElementById("racesvg");
+  const W = 888, H = 468, left = 44, right = 150, top = 30, axisH = 28, days = 26, max = 260;
+  const sx = d => left + (d - 1) / (days - 1) * (W - left - right);
+  const sy = v => top + (1 - v / max) * (H - top - axisH);
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const series = people.slice(0, 5).map(([name, total, me], i) => {
+    const w = Array.from({ length: days }, () => (rnd() < 0.25 ? 0 : 0.4 + rnd()));
+    const s = w.reduce((a, b) => a + b, 0); let acc = 0;
+    return { name, me, lead: i === 0, total, pts: w.map(x => (acc += x / s * total)) };
+  });
+  [0, 50, 100, 150, 200, 250].forEach(t => {
+    el("line", { x1: left, x2: W - right, y1: sy(t), y2: sy(t), stroke: css("--grid") }, svg);
+    el("text", { x: left - 10, y: sy(t) + 4, "text-anchor": "end", "font-size": 12, fill: css("--text-muted") }, svg, t);
+  });
+  [1, 5, 10, 15, 20, 26].forEach(d => el("text", { x: sx(d), y: H - 8, "text-anchor": "middle", "font-size": 12, fill: css("--text-muted") }, svg, d + " Eki"));
+  // Legend
+  const lg = [["Sen", css("--me")], ["Lider", css("--primary")], ["Diğer (ilk 5)", css("--context")]];
+  let lx = left;
+  lg.forEach(([t, c]) => {
+    el("line", { x1: lx, x2: lx + 20, y1: 8, y2: 8, stroke: c, "stroke-width": 3, "stroke-linecap": "round" }, svg);
+    const tx = el("text", { x: lx + 26, y: 12, "font-size": 12, fill: css("--text-secondary") }, svg, t);
+    lx += 26 + tx.getComputedTextLength() + 20;
+  });
+  const order = [...series].sort((a, b) => (a.me || a.lead) - (b.me || b.lead));
+  order.forEach(s => {
+    const c = s.me ? css("--me") : s.lead ? css("--primary") : css("--context");
+    const d = s.pts.map((v, i) => (i ? "L" : "M") + sx(i + 1).toFixed(1) + "," + sy(v).toFixed(1)).join(" ");
+    el("path", { d, fill: "none", stroke: c, "stroke-width": s.me || s.lead ? 2.5 : 2, "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
+    el("circle", { cx: sx(days), cy: sy(s.total), r: 4.5, fill: c, stroke: "#fff", "stroke-width": 2 }, svg);
+  });
+  // Uç etiketleri: çakışmayı önlemek için en az 18px aralık
+  const labels = series.map(s => ({ s, y: sy(s.total) })).sort((a, b) => a.y - b.y);
+  for (let i = 1; i < labels.length; i++) labels[i].y = Math.max(labels[i].y, labels[i - 1].y + 18);
+  labels.forEach(({ s, y }) => el("text", { x: sx(days) + 12, y: y + 5, "font-size": 13, "font-weight": s.me || s.lead ? 700 : 400, fill: css("--text-primary") }, svg, (s.me ? "Sen" : s.name) + " · " + s.total));
+})();
+
+// Bölgeler
+(() => {
+  const svg = document.getElementById("regsvg");
+  const data = [["Marmara", 1320], ["Ege", 980], ["Akdeniz", 760], ["İç Anadolu", 640], ["Karadeniz", 510]];
+  const left = 96, right = 60, rowH = 140 / data.length, bh = 16, max = 1400;
+  data.forEach(([n, v], i) => {
+    const y = i * rowH + (rowH - bh) / 2, w = v / max * (576 - left - right);
+    el("text", { x: 0, y: y + bh / 2 + 5, "font-size": 13, fill: css("--text-primary") }, svg, n);
+    hbar(svg, left, y, w, bh, css("--primary"));
+    el("text", { x: left + w + 8, y: y + bh / 2 + 5, "font-size": 13, fill: css("--text-primary") }, svg, v.toLocaleString("tr-TR"));
+  });
+})();
+
+// Spec katmanı
+if (location.search.includes("spec")) {
+  document.body.classList.add("spec");
+  document.querySelectorAll("[data-spec]").forEach(t => {
+    const r = t.getBoundingClientRect(), c = document.createElement("div");
+    c.className = "chip";
+    c.textContent = `${t.dataset.spec} · x${Math.round(r.left)} y${Math.round(r.top)} · ${Math.round(r.width)}×${Math.round(r.height)}`;
+    c.style.left = r.left + "px"; c.style.top = Math.max(0, r.top - 22) + "px";
+    document.body.appendChild(c);
+  });
+}
+</script>
+</body>
+</html>
