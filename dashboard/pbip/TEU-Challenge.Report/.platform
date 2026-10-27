@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "TEU-Challenge"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "01c8cc5a-f325-4d45-80e1-d03c34c778f6"
+  }
+}

@@ -1,0 +1,1082 @@
+{
+  "compatibilityLevel": 1567,
+  "model": {
+    "culture": "tr-TR",
+    "sourceQueryCulture": "tr-TR",
+    "defaultPowerBIDataSourceVersion": "powerBI_V3",
+    "dataAccessOptions": {
+      "legacyRedirects": true,
+      "returnErrorValuesAsNull": true
+    },
+    "tables": [
+      {
+        "name": "_Olculer",
+        "lineageTag": "54a856ca-c8de-4985-9a64-275dbd88d912",
+        "columns": [
+          {
+            "name": "Gizli",
+            "dataType": "string",
+            "sourceColumn": "Gizli",
+            "lineageTag": "ceabf65e-e321-492e-bb46-4d243d207f68",
+            "summarizeBy": "none",
+            "isHidden": true
+          }
+        ],
+        "partitions": [
+          {
+            "name": "_Olculer",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Kaynak = #table(type table [Gizli = text], {})",
+                "in",
+                "    Kaynak"
+              ]
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "Toplam TEU",
+            "expression": "SUM ( Challenge[TEU] )",
+            "lineageTag": "0af0820f-3808-45b0-9d94-db69bef36838",
+            "formatString": "#,0",
+            "description": "Seçili kişi/bölge/dönem için toplam TEU."
+          },
+          {
+            "name": "Aktif E-posta",
+            "expression": [
+              "VAR upn = LOWER ( USERPRINCIPALNAME () )",
+              "VAR kayitli =",
+              "    CALCULATE ( COUNTROWS ( Kisiler ), REMOVEFILTERS ( Kisiler ), Kisiler[Email] = upn )",
+              "RETURN",
+              "    -- Raporu açan kişi listede yoksa (ör. Desktop'ta deneme) demo kullanıcısı gösterilir.",
+              "    IF ( kayitli > 0, upn, \"can.demir@ornek.com\" )"
+            ],
+            "lineageTag": "93682835-ad15-4982-978a-c0225b9f80bc",
+            "description": "Raporu açan kullanıcının e-postası."
+          },
+          {
+            "name": "Ben mi",
+            "expression": [
+              "VAR em = [Aktif E-posta]",
+              "RETURN IF ( SELECTEDVALUE ( Kisiler[Email] ) = em, 1, 0 )"
+            ],
+            "lineageTag": "af682c9b-efbd-4ea5-be07-b307b79542a7",
+            "formatString": "0",
+            "description": "Satırdaki kişi raporu açan kişiyse 1."
+          },
+          {
+            "name": "Son Veri Günü",
+            "expression": "CALCULATE ( MAX ( Challenge[Tarih] ), REMOVEFILTERS ( Challenge ) )",
+            "lineageTag": "0ff25a1f-6dcf-4ed0-b0a1-48aa7d149c1d",
+            "formatString": "dd.MM.yyyy",
+            "description": "Demo için 'bugün' = verideki son gün. Canlı veride TODAY () kullanın."
+          },
+          {
+            "name": "Son Güncelleme",
+            "expression": [
+              "\"Son güncelleme: \"",
+              "    & FORMAT ( CALCULATE ( MAX ( Challenge[YuklemeZamani] ), REMOVEFILTERS ( Challenge ) ), \"dd.MM.yyyy HH:mm\" )"
+            ],
+            "lineageTag": "dfb239de-579d-4c85-a6b1-2df2a0175600"
+          },
+          {
+            "name": "Sıra",
+            "expression": [
+              "IF (",
+              "    ISINSCOPE ( Kisiler[Kisi] ),",
+              "    RANKX ( ALLSELECTED ( Kisiler[Kisi] ), [Toplam TEU], , DESC, SKIP )",
+              ")"
+            ],
+            "lineageTag": "f00c9c42-8aa8-4300-b3ac-989b5cf2c083",
+            "formatString": "0"
+          },
+          {
+            "name": "Liderlik TEU",
+            "expression": [
+              "VAR s = [Sıra]",
+              "RETURN IF ( s <= 15 || [Ben mi] = 1, [Toplam TEU] )"
+            ],
+            "lineageTag": "8658a07d-a24c-476b-8e09-d8434106acfb",
+            "formatString": "#,0",
+            "description": "İlk 15 kişi + raporu açan kişi."
+          },
+          {
+            "name": "Bar Rengi",
+            "expression": "SWITCH ( TRUE (), [Ben mi] = 1, \"#EB6834\", [Sıra] = 1, \"#2A78D6\", \"#C8C6C4\" )",
+            "lineageTag": "898c7d3d-670c-4456-8c2f-f992582ad424"
+          },
+          {
+            "name": "Satır Rengi",
+            "expression": "IF ( [Ben mi] = 1, \"#FDF0EA\", \"#FFFFFF\" )",
+            "lineageTag": "a2efeff5-14b5-4a0c-835c-5193dc2e5a55"
+          },
+          {
+            "name": "Benim TEU",
+            "expression": [
+              "VAR em = [Aktif E-posta]",
+              "RETURN",
+              "    COALESCE ( CALCULATE ( [Toplam TEU], REMOVEFILTERS ( Kisiler ), Kisiler[Email] = em ), 0 )"
+            ],
+            "lineageTag": "c985e170-c209-4d98-a30e-2b19a5ce0290",
+            "formatString": "#,0"
+          },
+          {
+            "name": "Benim Hedef",
+            "expression": [
+              "VAR em = [Aktif E-posta]",
+              "RETURN CALCULATE ( MAX ( Kisiler[HedefTEU] ), REMOVEFILTERS ( Kisiler ), Kisiler[Email] = em )"
+            ],
+            "lineageTag": "eeeffd00-7739-4758-aef2-4fb40552a7fb",
+            "formatString": "#,0"
+          },
+          {
+            "name": "Hedef Oranı",
+            "expression": "DIVIDE ( [Benim TEU], [Benim Hedef] )",
+            "lineageTag": "9930a903-a496-4c27-8d64-3f23aea3ba35",
+            "formatString": "0%"
+          },
+          {
+            "name": "Hedef Açıklama",
+            "expression": [
+              "VAR kalan = [Benim Hedef] - [Benim TEU]",
+              "RETURN",
+              "    \"Hedef \" & FORMAT ( [Benim Hedef], \"#,0\" ) & \" TEU · %\" & FORMAT ( [Hedef Oranı] * 100, \"0\" )",
+              "        & IF ( kalan > 0, \" · \" & FORMAT ( kalan, \"#,0\" ) & \" TEU kaldı\", \" · Hedef tamamlandı\" )"
+            ],
+            "lineageTag": "de1b7563-254d-4c2e-b8f0-00420a1dc81d"
+          },
+          {
+            "name": "Katılımcı Sayısı",
+            "expression": "COUNTROWS ( ALLSELECTED ( Kisiler[Kisi] ) )",
+            "lineageTag": "1ecb4476-6747-4b53-b91b-d751a8d633f3",
+            "formatString": "0"
+          },
+          {
+            "name": "Benim Sıram",
+            "expression": [
+              "VAR benim = [Benim TEU]",
+              "RETURN COUNTROWS ( FILTER ( ALLSELECTED ( Kisiler[Kisi] ), [Toplam TEU] > benim ) ) + 1"
+            ],
+            "lineageTag": "dcb37082-a53c-40c4-aa56-9848b6b95266",
+            "formatString": "0"
+          },
+          {
+            "name": "Dünkü Sıram",
+            "expression": [
+              "VAR d = [Son Veri Günü] - 1",
+              "VAR em = [Aktif E-posta]",
+              "VAR benimDun =",
+              "    CALCULATE ( [Toplam TEU], REMOVEFILTERS ( Kisiler ), Kisiler[Email] = em, Tarih[Tarih] <= d )",
+              "RETURN",
+              "    COUNTROWS (",
+              "        FILTER ( ALLSELECTED ( Kisiler[Kisi] ), CALCULATE ( [Toplam TEU], Tarih[Tarih] <= d ) > benimDun )",
+              "    ) + 1"
+            ],
+            "lineageTag": "43a38f89-1f26-4a64-b51a-d83a5b1e6077",
+            "formatString": "0"
+          },
+          {
+            "name": "Sıram Metin",
+            "expression": "FORMAT ( [Benim Sıram], \"0\" ) & \".\"",
+            "lineageTag": "39be2d16-6c34-41af-be32-21601e2a9ffe"
+          },
+          {
+            "name": "Sıra Açıklama",
+            "expression": [
+              "VAR bugun = [Benim Sıram]",
+              "VAR dun = [Dünkü Sıram]",
+              "VAR fark = dun - bugun",
+              "VAR degisim =",
+              "    SWITCH (",
+              "        TRUE (),",
+              "        fark > 0, UNICHAR ( 9650 ) & \" \" & fark & \" sıra yükseldin (\" & dun & \". → \" & bugun & \".)\",",
+              "        fark < 0, UNICHAR ( 9660 ) & \" \" & ABS ( fark ) & \" sıra düştün (\" & dun & \". → \" & bugun & \".)\",",
+              "        \"Dünle aynı sıradasın\"",
+              "    )",
+              "RETURN [Katılımcı Sayısı] & \" kişi içinde · \" & degisim"
+            ],
+            "lineageTag": "fc78169e-473c-4470-b525-8928a5356016"
+          },
+          {
+            "name": "Üsttekiyle Fark",
+            "expression": [
+              "VAR benim = [Benim TEU]",
+              "VAR ust = MINX ( FILTER ( ALLSELECTED ( Kisiler[Kisi] ), [Toplam TEU] > benim ), [Toplam TEU] )",
+              "RETURN IF ( ISBLANK ( ust ), 0, ust - benim )"
+            ],
+            "lineageTag": "af5a1200-f480-49a2-b5cd-12d236a00e11",
+            "formatString": "#,0\" TEU\""
+          },
+          {
+            "name": "Üstteki Açıklama",
+            "expression": [
+              "VAR benim = [Benim TEU]",
+              "VAR t =",
+              "    FILTER ( ADDCOLUMNS ( ALLSELECTED ( Kisiler[Kisi] ), \"@teu\", [Toplam TEU] ), [@teu] > benim )",
+              "VAR ustTeu = MINX ( t, [@teu] )",
+              "VAR ad = CONCATENATEX ( TOPN ( 1, FILTER ( t, [@teu] = ustTeu ), Kisiler[Kisi], ASC ), Kisiler[Kisi] )",
+              "RETURN",
+              "    IF (",
+              "        ISBLANK ( ustTeu ),",
+              "        \"Zirvedesin, farkı koru!\",",
+              "        \"Önündeki: \" & ad & \" · \" & FORMAT ( ustTeu, \"#,0\" ) & \" TEU\"",
+              "    )"
+            ],
+            "lineageTag": "bd70fefc-09d4-41f0-9f0a-c651024ae9f7"
+          },
+          {
+            "name": "Bugün Benim TEU",
+            "expression": [
+              "VAR d = [Son Veri Günü]",
+              "VAR em = [Aktif E-posta]",
+              "RETURN",
+              "    COALESCE (",
+              "        CALCULATE ( [Toplam TEU], REMOVEFILTERS ( Kisiler ), Kisiler[Email] = em, Tarih[Tarih] = d ),",
+              "        0",
+              "    )"
+            ],
+            "lineageTag": "59e2ec52-7980-47de-870b-a17ff8870e8e",
+            "formatString": "+#,0\" TEU\";-#,0\" TEU\";0\" TEU\""
+          },
+          {
+            "name": "Bugün Açıklama",
+            "expression": [
+              "VAR d = [Son Veri Günü]",
+              "VAR teu = CALCULATE ( [Toplam TEU], REMOVEFILTERS ( Kisiler ), Tarih[Tarih] = d )",
+              "VAR giris = CALCULATE ( COUNTROWS ( Challenge ), REMOVEFILTERS ( Kisiler ), Tarih[Tarih] = d )",
+              "RETURN \"Şirket geneli: +\" & FORMAT ( teu, \"#,0\" ) & \" TEU · \" & giris & \" giriş\""
+            ],
+            "lineageTag": "cd772958-e6f5-45a8-a4cd-68d02c341d58"
+          },
+          {
+            "name": "Lider Başlık",
+            "expression": [
+              "VAR t = ADDCOLUMNS ( ALLSELECTED ( Kisiler[Kisi] ), \"@teu\", [Toplam TEU] )",
+              "VAR enYuksek = MAXX ( t, [@teu] )",
+              "VAR lider = CONCATENATEX ( TOPN ( 1, FILTER ( t, [@teu] = enYuksek ), Kisiler[Kisi], ASC ), Kisiler[Kisi] )",
+              "RETURN",
+              "    \"Lider \" & lider & \" (\" & FORMAT ( enYuksek, \"#,0\" ) & \" TEU) · Sen \" & [Benim Sıram] & \". sıradasın\""
+            ],
+            "lineageTag": "d0859776-21dc-40c1-a484-d2b3f20baabc"
+          },
+          {
+            "name": "Yarış TEU",
+            "expression": [
+              "VAR seri = SELECTEDVALUE ( Seri[SeriNo] )",
+              "VAR gun = MAX ( Tarih[Tarih] )",
+              "VAR em = [Aktif E-posta]",
+              "VAR t =",
+              "    ADDCOLUMNS ( ALLSELECTED ( Kisiler[Kisi] ), \"@teu\", CALCULATE ( [Toplam TEU], ALLSELECTED ( Tarih ) ) )",
+              "VAR benimAd =",
+              "    CALCULATE ( SELECTEDVALUE ( Kisiler[Kisi] ), REMOVEFILTERS ( Kisiler ), Kisiler[Email] = em )",
+              "VAR benimTeu = MAXX ( FILTER ( t, Kisiler[Kisi] = benimAd ), [@teu] )",
+              "VAR benimSira = COUNTROWS ( FILTER ( t, [@teu] > benimTeu ) ) + 1",
+              "VAR hedefSira = SWITCH ( seri, 1, benimSira, 2, 1, 3, benimSira - 1, 4, benimSira + 1 )",
+              "VAR kisi =",
+              "    IF (",
+              "        seri = 1,",
+              "        benimAd,",
+              "        CONCATENATEX (",
+              "            TOPN ( 1, FILTER ( t, RANKX ( t, [@teu], , DESC, SKIP ) = hedefSira ), Kisiler[Kisi], ASC ),",
+              "            Kisiler[Kisi]",
+              "        )",
+              "    )",
+              "RETURN",
+              "    IF (",
+              "        gun > [Son Veri Günü] || kisi = \"\" || hedefSira < 1,",
+              "        BLANK (),",
+              "        CALCULATE ( [Toplam TEU], REMOVEFILTERS ( Kisiler ), Kisiler[Kisi] = kisi, Tarih[Tarih] <= gun )",
+              "    )"
+            ],
+            "lineageTag": "4d32a879-9a26-48c3-b380-0e4532ec90ed",
+            "formatString": "#,0",
+            "description": "Sen / Lider / bir öndeki / bir arkadaki kişinin kümülatif TEU'su."
+          },
+          {
+            "name": "Son Giriş TEU",
+            "expression": "IF ( MAX ( Challenge[SonGirisSirasi] ) <= 6, SUM ( Challenge[TEU] ) )",
+            "lineageTag": "6e48cbe3-c03d-48ef-8ec8-b0762deaa92e",
+            "formatString": "#,0",
+            "description": "Son 6 giriş."
+          },
+          {
+            "name": "Lider Bölge Başlık",
+            "expression": [
+              "VAR t = ADDCOLUMNS ( ALLSELECTED ( Kisiler[Bolge] ), \"@teu\", [Toplam TEU] )",
+              "VAR enYuksek = MAXX ( t, [@teu] )",
+              "RETURN",
+              "    CONCATENATEX ( TOPN ( 1, FILTER ( t, [@teu] = enYuksek ), Kisiler[Bolge], ASC ), Kisiler[Bolge] )",
+              "        & \" bölgesi önde\""
+            ],
+            "lineageTag": "6fa525da-d236-4716-ac30-a62149411005"
+          },
+          {
+            "name": "Kişi Sayısı",
+            "expression": "COUNTROWS ( Kisiler )",
+            "lineageTag": "16e45ff8-3370-4815-aeb9-9c198e630bba",
+            "formatString": "0"
+          },
+          {
+            "name": "Kişi Başı TEU",
+            "expression": "DIVIDE ( [Toplam TEU], [Kişi Sayısı] )",
+            "lineageTag": "5e3617eb-d96e-437e-a03b-4d1f6583bfbb",
+            "formatString": "#,0.0"
+          },
+          {
+            "name": "Bölge Hedef %",
+            "expression": "DIVIDE ( [Toplam TEU], SUM ( Kisiler[HedefTEU] ) )",
+            "lineageTag": "8b29c433-9ba1-4a3f-b712-f0b5dfc81c69",
+            "formatString": "0%"
+          },
+          {
+            "name": "Hedefe Ulaşan",
+            "expression": "COALESCE ( COUNTROWS ( FILTER ( Kisiler, [Toplam TEU] >= Kisiler[HedefTEU] ) ), 0 )",
+            "lineageTag": "c48b0bf5-92a6-4093-98c6-3eecbd0b6d4a",
+            "formatString": "0"
+          },
+          {
+            "name": "Aktif Katılımcı %",
+            "expression": [
+              "VAR d = [Son Veri Günü]",
+              "VAR aktif =",
+              "    COUNTROWS (",
+              "        FILTER ( Kisiler, CALCULATE ( COUNTROWS ( Challenge ), Tarih[Tarih] > d - 7, Tarih[Tarih] <= d ) > 0 )",
+              "    )",
+              "RETURN DIVIDE ( aktif, [Kişi Sayısı] )"
+            ],
+            "lineageTag": "4304cdcf-7d5c-4429-b522-c511b469dd35",
+            "formatString": "0%",
+            "description": "Son 7 günde en az bir giriş yapanların oranı."
+          },
+          {
+            "name": "Kümülatif TEU",
+            "expression": [
+              "VAR gun = MAX ( Tarih[Tarih] )",
+              "RETURN IF ( gun > [Son Veri Günü], BLANK (), CALCULATE ( [Toplam TEU], Tarih[Tarih] <= gun ) )"
+            ],
+            "lineageTag": "b6d53690-fa7a-45e7-913c-6916c5b2e6c2",
+            "formatString": "#,0"
+          }
+        ]
+      },
+      {
+        "name": "Kisiler",
+        "lineageTag": "e2b5f7ba-b87a-40d2-b60f-c4dddabe407f",
+        "columns": [
+          {
+            "name": "KisiID",
+            "dataType": "int64",
+            "sourceColumn": "KisiID",
+            "lineageTag": "31cd1f27-db14-49e1-96c0-155a8cc73ce6",
+            "summarizeBy": "none",
+            "formatString": "0",
+            "isHidden": true
+          },
+          {
+            "name": "Kisi",
+            "dataType": "string",
+            "sourceColumn": "Kisi",
+            "lineageTag": "1447cce5-2fc6-425c-849a-c7e9bd5bf033",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Email",
+            "dataType": "string",
+            "sourceColumn": "Email",
+            "lineageTag": "b8c742b5-387a-4a05-ad01-e7e475c12c60",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Bolge",
+            "dataType": "string",
+            "sourceColumn": "Bolge",
+            "lineageTag": "4f0bcb4a-ee39-448a-b9ba-2540c613e610",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Yonetici",
+            "dataType": "string",
+            "sourceColumn": "Yonetici",
+            "lineageTag": "d7788341-776d-4cd9-a800-35459f4bb6b1",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "HedefTEU",
+            "dataType": "int64",
+            "sourceColumn": "HedefTEU",
+            "lineageTag": "462deff6-f20c-472b-8afc-8d7b7464fed5",
+            "summarizeBy": "sum",
+            "formatString": "#,0"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Kisiler",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    // Gerçek veride bu adımı kendi personel listenizle (Excel, SharePoint, SQL) değiştirin.",
+                "    Kaynak = #table(",
+                "        type table [KisiID = Int64.Type, Kisi = text, Email = text, Bolge = text, Yonetici = text, HedefTEU = Int64.Type],",
+                "        {",
+                "        {1, \"Ayşe Kaya\", \"ayse.kaya@ornek.com\", \"Marmara\", \"Leyla Güneş\", 250},",
+                "        {2, \"Mehmet Tunç\", \"mehmet.tunc@ornek.com\", \"Ege\", \"Nil Ateş\", 250},",
+                "        {3, \"Can Demir\", \"can.demir@ornek.com\", \"Marmara\", \"Leyla Güneş\", 250},",
+                "        {4, \"Elif Şahin\", \"elif.sahin@ornek.com\", \"İç Anadolu\", \"Okan Bulut\", 250},",
+                "        {5, \"Burak Yıldız\", \"burak.yildiz@ornek.com\", \"Akdeniz\", \"Serkan Uysal\", 250},",
+                "        {6, \"Zeynep Arslan\", \"zeynep.arslan@ornek.com\", \"Marmara\", \"Leyla Güneş\", 250},",
+                "        {7, \"Emre Koç\", \"emre.koc@ornek.com\", \"Ege\", \"Nil Ateş\", 250},",
+                "        {8, \"Selin Aydın\", \"selin.aydin@ornek.com\", \"Karadeniz\", \"Murat Akın\", 250},",
+                "        {9, \"Kerem Öztürk\", \"kerem.ozturk@ornek.com\", \"Marmara\", \"Leyla Güneş\", 250},",
+                "        {10, \"Deniz Çelik\", \"deniz.celik@ornek.com\", \"Akdeniz\", \"Serkan Uysal\", 250},",
+                "        {11, \"Ozan Kurt\", \"ozan.kurt@ornek.com\", \"İç Anadolu\", \"Okan Bulut\", 250},",
+                "        {12, \"Merve Polat\", \"merve.polat@ornek.com\", \"Karadeniz\", \"Murat Akın\", 250},",
+                "        {13, \"Hakan Erdem\", \"hakan.erdem@ornek.com\", \"Ege\", \"Nil Ateş\", 250},",
+                "        {14, \"Gizem Acar\", \"gizem.acar@ornek.com\", \"Marmara\", \"Leyla Güneş\", 250},",
+                "        {15, \"Tolga Şen\", \"tolga.sen@ornek.com\", \"Akdeniz\", \"Serkan Uysal\", 250},",
+                "        {16, \"Ali Yılmaz\", \"ali.yilmaz@ornek.com\", \"Marmara\", \"Leyla Güneş\", 250},",
+                "        {17, \"Fatma Doğan\", \"fatma.dogan@ornek.com\", \"Ege\", \"Nil Ateş\", 250},",
+                "        {18, \"Mustafa Kılıç\", \"mustafa.kilic@ornek.com\", \"Akdeniz\", \"Serkan Uysal\", 250},",
+                "        {19, \"Esra Aslan\", \"esra.aslan@ornek.com\", \"İç Anadolu\", \"Okan Bulut\", 250},",
+                "        {20, \"Hüseyin Çetin\", \"huseyin.cetin@ornek.com\", \"Karadeniz\", \"Murat Akın\", 250},",
+                "        {21, \"Büşra Kara\", \"busra.kara@ornek.com\", \"Marmara\", \"Leyla Güneş\", 250},",
+                "        {22, \"İbrahim Özdemir\", \"ibrahim.ozdemir@ornek.com\", \"Ege\", \"Nil Ateş\", 250},",
+                "        {23, \"Cansu Yavuz\", \"cansu.yavuz@ornek.com\", \"Akdeniz\", \"Serkan Uysal\", 250},",
+                "        {24, \"Oğuz Aksoy\", \"oguz.aksoy@ornek.com\", \"İç Anadolu\", \"Okan Bulut\", 250},",
+                "        {25, \"Ebru Turan\", \"ebru.turan@ornek.com\", \"Karadeniz\", \"Murat Akın\", 250},",
+                "        {26, \"Serdar Işık\", \"serdar.isik@ornek.com\", \"Marmara\", \"Leyla Güneş\", 250},",
+                "        {27, \"Pınar Ekinci\", \"pinar.ekinci@ornek.com\", \"Ege\", \"Nil Ateş\", 250},",
+                "        {28, \"Kaan Tekin\", \"kaan.tekin@ornek.com\", \"Akdeniz\", \"Serkan Uysal\", 250},",
+                "        {29, \"Derya Bozkurt\", \"derya.bozkurt@ornek.com\", \"İç Anadolu\", \"Okan Bulut\", 250},",
+                "        {30, \"Volkan Uçar\", \"volkan.ucar@ornek.com\", \"Karadeniz\", \"Murat Akın\", 250},",
+                "        {31, \"Sibel Duman\", \"sibel.duman@ornek.com\", \"Marmara\", \"Leyla Güneş\", 250},",
+                "        {32, \"Arda Kaplan\", \"arda.kaplan@ornek.com\", \"Ege\", \"Nil Ateş\", 250},",
+                "        {33, \"Melis Sarı\", \"melis.sari@ornek.com\", \"Akdeniz\", \"Serkan Uysal\", 250},",
+                "        {34, \"Barış Karaca\", \"baris.karaca@ornek.com\", \"İç Anadolu\", \"Okan Bulut\", 250},",
+                "        {35, \"Gamze Yüksel\", \"gamze.yuksel@ornek.com\", \"Karadeniz\", \"Murat Akın\", 250},",
+                "        {36, \"Onur Coşkun\", \"onur.coskun@ornek.com\", \"Marmara\", \"Leyla Güneş\", 250},",
+                "        {37, \"İrem Kurtuluş\", \"irem.kurtulus@ornek.com\", \"Ege\", \"Nil Ateş\", 250},",
+                "        {38, \"Cem Avcı\", \"cem.avci@ornek.com\", \"Akdeniz\", \"Serkan Uysal\", 250},",
+                "        {39, \"Tuğba Öz\", \"tugba.oz@ornek.com\", \"İç Anadolu\", \"Okan Bulut\", 250},",
+                "        {40, \"Umut Güler\", \"umut.guler@ornek.com\", \"Karadeniz\", \"Murat Akın\", 250},",
+                "        {41, \"Seda Karakaya\", \"seda.karakaya@ornek.com\", \"Marmara\", \"Leyla Güneş\", 250},",
+                "        {42, \"Yusuf Sezer\", \"yusuf.sezer@ornek.com\", \"Ege\", \"Nil Ateş\", 250}",
+                "        })",
+                "in",
+                "    Kaynak"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Challenge",
+        "lineageTag": "af94e003-b2f1-4e98-9ea2-6af2176d1d72",
+        "columns": [
+          {
+            "name": "KayitID",
+            "dataType": "int64",
+            "sourceColumn": "KayitID",
+            "lineageTag": "177ecd71-b1ae-4359-8a48-a394d2c11fdf",
+            "summarizeBy": "none",
+            "formatString": "0"
+          },
+          {
+            "name": "KisiID",
+            "dataType": "int64",
+            "sourceColumn": "KisiID",
+            "lineageTag": "d566682f-46a0-4dfc-8bd7-dc82a17c0253",
+            "summarizeBy": "none",
+            "formatString": "0",
+            "isHidden": true
+          },
+          {
+            "name": "YuklemeZamani",
+            "dataType": "dateTime",
+            "sourceColumn": "YuklemeZamani",
+            "lineageTag": "560d30f0-76e2-4c76-8721-5ae5e3b05b9f",
+            "summarizeBy": "none",
+            "formatString": "dd.MM.yyyy HH:mm"
+          },
+          {
+            "name": "TEU",
+            "dataType": "int64",
+            "sourceColumn": "TEU",
+            "lineageTag": "c2c546d1-113b-43b3-8f37-c8e6b2036a1e",
+            "summarizeBy": "sum",
+            "formatString": "#,0"
+          },
+          {
+            "name": "Tarih",
+            "dataType": "dateTime",
+            "sourceColumn": "Tarih",
+            "lineageTag": "82d6eea9-867b-48eb-a387-12086338dfa3",
+            "summarizeBy": "none",
+            "formatString": "dd.MM.yyyy",
+            "isHidden": true,
+            "annotations": [
+              {
+                "name": "UnderlyingDateTimeDataType",
+                "value": "Date"
+              }
+            ]
+          },
+          {
+            "name": "SonGirisSirasi",
+            "dataType": "int64",
+            "sourceColumn": "SonGirisSirasi",
+            "lineageTag": "6b3e8c80-507e-40fe-bea7-57ef6e762f28",
+            "summarizeBy": "none",
+            "formatString": "0",
+            "isHidden": true
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Challenge",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    // Gerçek veride bu adımı challenge tablonuzla değiştirin (sütunlar: KayitID, KisiID, YuklemeZamani, TEU).",
+                "    Kaynak = #table(",
+                "        type table [KayitID = Int64.Type, KisiID = Int64.Type, YuklemeZamani = datetime, TEU = Int64.Type],",
+                "        {",
+                "        {1, 15, #datetime(2026, 10, 1, 9, 17, 47), 6},",
+                "        {2, 12, #datetime(2026, 10, 1, 9, 29, 6), 12},",
+                "        {3, 39, #datetime(2026, 10, 1, 10, 15, 12), 6},",
+                "        {4, 6, #datetime(2026, 10, 1, 10, 29, 32), 4},",
+                "        {5, 24, #datetime(2026, 10, 1, 11, 59, 13), 16},",
+                "        {6, 36, #datetime(2026, 10, 1, 12, 1, 13), 6},",
+                "        {7, 22, #datetime(2026, 10, 1, 12, 48, 15), 20},",
+                "        {8, 37, #datetime(2026, 10, 1, 13, 23, 26), 4},",
+                "        {9, 18, #datetime(2026, 10, 1, 13, 23, 39), 2},",
+                "        {10, 38, #datetime(2026, 10, 1, 13, 24, 49), 4},",
+                "        {11, 12, #datetime(2026, 10, 1, 13, 37, 14), 16},",
+                "        {12, 3, #datetime(2026, 10, 1, 14, 30, 54), 4},",
+                "        {13, 4, #datetime(2026, 10, 1, 15, 31, 55), 4},",
+                "        {14, 23, #datetime(2026, 10, 1, 16, 4, 38), 6},",
+                "        {15, 5, #datetime(2026, 10, 1, 17, 44, 43), 16},",
+                "        {16, 4, #datetime(2026, 10, 1, 17, 45, 21), 20},",
+                "        {17, 28, #datetime(2026, 10, 1, 17, 48, 5), 8},",
+                "        {18, 13, #datetime(2026, 10, 1, 17, 50, 9), 10},",
+                "        {19, 19, #datetime(2026, 10, 2, 8, 45, 26), 6},",
+                "        {20, 38, #datetime(2026, 10, 2, 9, 40, 29), 10},",
+                "        {21, 14, #datetime(2026, 10, 2, 9, 41, 33), 20},",
+                "        {22, 37, #datetime(2026, 10, 2, 10, 50, 28), 10},",
+                "        {23, 5, #datetime(2026, 10, 2, 11, 26, 5), 9},",
+                "        {24, 11, #datetime(2026, 10, 2, 11, 40, 43), 4},",
+                "        {25, 26, #datetime(2026, 10, 2, 11, 50, 19), 6},",
+                "        {26, 37, #datetime(2026, 10, 2, 13, 26, 8), 20},",
+                "        {27, 4, #datetime(2026, 10, 2, 14, 34, 46), 4},",
+                "        {28, 4, #datetime(2026, 10, 2, 15, 23, 20), 12},",
+                "        {29, 4, #datetime(2026, 10, 2, 15, 57, 56), 8},",
+                "        {30, 30, #datetime(2026, 10, 2, 16, 9, 30), 12},",
+                "        {31, 3, #datetime(2026, 10, 2, 16, 12, 55), 16},",
+                "        {32, 26, #datetime(2026, 10, 2, 17, 16, 21), 6},",
+                "        {33, 1, #datetime(2026, 10, 2, 17, 25, 56), 4},",
+                "        {34, 41, #datetime(2026, 10, 2, 17, 58, 22), 16},",
+                "        {35, 2, #datetime(2026, 10, 5, 8, 30, 28), 2},",
+                "        {36, 39, #datetime(2026, 10, 5, 8, 40, 23), 10},",
+                "        {37, 2, #datetime(2026, 10, 5, 9, 22, 53), 10},",
+                "        {38, 20, #datetime(2026, 10, 5, 10, 43, 36), 8},",
+                "        {39, 15, #datetime(2026, 10, 5, 11, 22, 34), 10},",
+                "        {40, 5, #datetime(2026, 10, 5, 11, 33, 35), 20},",
+                "        {41, 42, #datetime(2026, 10, 5, 11, 56, 41), 10},",
+                "        {42, 37, #datetime(2026, 10, 5, 12, 24, 11), 2},",
+                "        {43, 18, #datetime(2026, 10, 5, 12, 51, 10), 8},",
+                "        {44, 2, #datetime(2026, 10, 5, 13, 2, 57), 12},",
+                "        {45, 39, #datetime(2026, 10, 5, 13, 13, 35), 20},",
+                "        {46, 42, #datetime(2026, 10, 5, 13, 28, 48), 2},",
+                "        {47, 4, #datetime(2026, 10, 5, 13, 28, 59), 6},",
+                "        {48, 1, #datetime(2026, 10, 5, 14, 18, 5), 16},",
+                "        {49, 41, #datetime(2026, 10, 5, 16, 40, 20), 10},",
+                "        {50, 21, #datetime(2026, 10, 5, 16, 59, 40), 10},",
+                "        {51, 10, #datetime(2026, 10, 5, 17, 11, 33), 20},",
+                "        {52, 30, #datetime(2026, 10, 6, 9, 18, 26), 2},",
+                "        {53, 37, #datetime(2026, 10, 6, 9, 43, 37), 4},",
+                "        {54, 29, #datetime(2026, 10, 6, 10, 18, 52), 10},",
+                "        {55, 21, #datetime(2026, 10, 6, 10, 52, 0), 16},",
+                "        {56, 28, #datetime(2026, 10, 6, 12, 12, 25), 4},",
+                "        {57, 31, #datetime(2026, 10, 6, 12, 21, 23), 7},",
+                "        {58, 28, #datetime(2026, 10, 6, 12, 31, 13), 2},",
+                "        {59, 42, #datetime(2026, 10, 6, 12, 49, 31), 8},",
+                "        {60, 41, #datetime(2026, 10, 6, 12, 54, 43), 6},",
+                "        {61, 8, #datetime(2026, 10, 6, 13, 4, 18), 16},",
+                "        {62, 9, #datetime(2026, 10, 6, 13, 5, 20), 6},",
+                "        {63, 36, #datetime(2026, 10, 6, 14, 8, 27), 2},",
+                "        {64, 7, #datetime(2026, 10, 6, 14, 26, 30), 6},",
+                "        {65, 4, #datetime(2026, 10, 6, 14, 28, 20), 4},",
+                "        {66, 17, #datetime(2026, 10, 6, 15, 35, 25), 4},",
+                "        {67, 28, #datetime(2026, 10, 6, 15, 36, 15), 14},",
+                "        {68, 4, #datetime(2026, 10, 6, 15, 56, 10), 6},",
+                "        {69, 4, #datetime(2026, 10, 6, 17, 8, 20), 4},",
+                "        {70, 3, #datetime(2026, 10, 6, 17, 29, 50), 12},",
+                "        {71, 30, #datetime(2026, 10, 6, 17, 53, 50), 12},",
+                "        {72, 7, #datetime(2026, 10, 6, 17, 58, 33), 12},",
+                "        {73, 23, #datetime(2026, 10, 7, 8, 34, 39), 4},",
+                "        {74, 2, #datetime(2026, 10, 7, 8, 35, 20), 8},",
+                "        {75, 9, #datetime(2026, 10, 7, 8, 52, 30), 12},",
+                "        {76, 14, #datetime(2026, 10, 7, 8, 57, 6), 1},",
+                "        {77, 11, #datetime(2026, 10, 7, 9, 32, 51), 4},",
+                "        {78, 30, #datetime(2026, 10, 7, 10, 3, 1), 10},",
+                "        {79, 6, #datetime(2026, 10, 7, 10, 13, 57), 6},",
+                "        {80, 13, #datetime(2026, 10, 7, 12, 17, 22), 4},",
+                "        {81, 11, #datetime(2026, 10, 7, 13, 3, 34), 4},",
+                "        {82, 40, #datetime(2026, 10, 7, 13, 23, 51), 3},",
+                "        {83, 15, #datetime(2026, 10, 7, 13, 44, 30), 8},",
+                "        {84, 1, #datetime(2026, 10, 7, 13, 46, 1), 12},",
+                "        {85, 25, #datetime(2026, 10, 7, 14, 13, 41), 10},",
+                "        {86, 4, #datetime(2026, 10, 7, 14, 34, 26), 12},",
+                "        {87, 23, #datetime(2026, 10, 7, 15, 0, 40), 6},",
+                "        {88, 6, #datetime(2026, 10, 7, 15, 7, 12), 8},",
+                "        {89, 38, #datetime(2026, 10, 7, 15, 50, 12), 4},",
+                "        {90, 2, #datetime(2026, 10, 7, 16, 10, 58), 10},",
+                "        {91, 11, #datetime(2026, 10, 7, 16, 18, 10), 8},",
+                "        {92, 1, #datetime(2026, 10, 7, 16, 19, 51), 2},",
+                "        {93, 5, #datetime(2026, 10, 7, 16, 46, 57), 10},",
+                "        {94, 12, #datetime(2026, 10, 7, 17, 10, 2), 8},",
+                "        {95, 11, #datetime(2026, 10, 7, 17, 16, 13), 16},",
+                "        {96, 2, #datetime(2026, 10, 7, 17, 22, 51), 10},",
+                "        {97, 4, #datetime(2026, 10, 7, 17, 25, 22), 2},",
+                "        {98, 2, #datetime(2026, 10, 7, 17, 48, 14), 12},",
+                "        {99, 8, #datetime(2026, 10, 8, 8, 40, 17), 10},",
+                "        {100, 3, #datetime(2026, 10, 8, 9, 16, 41), 6},",
+                "        {101, 18, #datetime(2026, 10, 8, 9, 37, 17), 4},",
+                "        {102, 25, #datetime(2026, 10, 8, 10, 13, 14), 8},",
+                "        {103, 24, #datetime(2026, 10, 8, 10, 14, 39), 8},",
+                "        {104, 4, #datetime(2026, 10, 8, 10, 35, 7), 4},",
+                "        {105, 29, #datetime(2026, 10, 8, 10, 37, 5), 20},",
+                "        {106, 2, #datetime(2026, 10, 8, 10, 48, 50), 10},",
+                "        {107, 40, #datetime(2026, 10, 8, 11, 3, 12), 4},",
+                "        {108, 2, #datetime(2026, 10, 8, 11, 7, 37), 10},",
+                "        {109, 20, #datetime(2026, 10, 8, 11, 25, 15), 20},",
+                "        {110, 3, #datetime(2026, 10, 8, 11, 40, 24), 4},",
+                "        {111, 10, #datetime(2026, 10, 8, 12, 53, 55), 16},",
+                "        {112, 4, #datetime(2026, 10, 8, 12, 57, 16), 8},",
+                "        {113, 3, #datetime(2026, 10, 8, 12, 59, 29), 8},",
+                "        {114, 9, #datetime(2026, 10, 8, 13, 46, 5), 6},",
+                "        {115, 7, #datetime(2026, 10, 8, 14, 2, 27), 6},",
+                "        {116, 2, #datetime(2026, 10, 8, 15, 45, 53), 12},",
+                "        {117, 15, #datetime(2026, 10, 8, 15, 59, 12), 6},",
+                "        {118, 6, #datetime(2026, 10, 8, 17, 18, 1), 16},",
+                "        {119, 18, #datetime(2026, 10, 8, 17, 27, 17), 6},",
+                "        {120, 19, #datetime(2026, 10, 8, 17, 50, 40), 16},",
+                "        {121, 42, #datetime(2026, 10, 9, 8, 58, 40), 8},",
+                "        {122, 11, #datetime(2026, 10, 9, 8, 59, 29), 4},",
+                "        {123, 12, #datetime(2026, 10, 9, 10, 2, 27), 16},",
+                "        {124, 13, #datetime(2026, 10, 9, 10, 28, 48), 6},",
+                "        {125, 18, #datetime(2026, 10, 9, 10, 28, 57), 2},",
+                "        {126, 5, #datetime(2026, 10, 9, 11, 12, 40), 6},",
+                "        {127, 6, #datetime(2026, 10, 9, 11, 16, 57), 20},",
+                "        {128, 12, #datetime(2026, 10, 9, 11, 24, 15), 6},",
+                "        {129, 40, #datetime(2026, 10, 9, 11, 42, 48), 8},",
+                "        {130, 3, #datetime(2026, 10, 9, 13, 31, 36), 2},",
+                "        {131, 38, #datetime(2026, 10, 9, 13, 59, 10), 2},",
+                "        {132, 39, #datetime(2026, 10, 9, 14, 18, 16), 6},",
+                "        {133, 15, #datetime(2026, 10, 9, 15, 3, 46), 3},",
+                "        {134, 1, #datetime(2026, 10, 9, 15, 16, 16), 8},",
+                "        {135, 11, #datetime(2026, 10, 9, 15, 49, 32), 6},",
+                "        {136, 13, #datetime(2026, 10, 9, 15, 53, 12), 4},",
+                "        {137, 3, #datetime(2026, 10, 9, 15, 54, 39), 16},",
+                "        {138, 9, #datetime(2026, 10, 9, 16, 18, 32), 2},",
+                "        {139, 4, #datetime(2026, 10, 9, 16, 23, 27), 20},",
+                "        {140, 3, #datetime(2026, 10, 9, 17, 19, 57), 16},",
+                "        {141, 6, #datetime(2026, 10, 9, 17, 34, 9), 6},",
+                "        {142, 35, #datetime(2026, 10, 12, 8, 31, 58), 4},",
+                "        {143, 3, #datetime(2026, 10, 12, 8, 35, 5), 6},",
+                "        {144, 5, #datetime(2026, 10, 12, 8, 53, 1), 4},",
+                "        {145, 4, #datetime(2026, 10, 12, 8, 53, 19), 4},",
+                "        {146, 2, #datetime(2026, 10, 12, 10, 33, 39), 6},",
+                "        {147, 1, #datetime(2026, 10, 12, 10, 34, 40), 12},",
+                "        {148, 5, #datetime(2026, 10, 12, 10, 38, 11), 10},",
+                "        {149, 6, #datetime(2026, 10, 12, 10, 39, 6), 20},",
+                "        {150, 29, #datetime(2026, 10, 12, 11, 2, 28), 3},",
+                "        {151, 26, #datetime(2026, 10, 12, 11, 29, 32), 12},",
+                "        {152, 17, #datetime(2026, 10, 12, 11, 51, 3), 2},",
+                "        {153, 8, #datetime(2026, 10, 12, 14, 9, 9), 6},",
+                "        {154, 5, #datetime(2026, 10, 12, 16, 31, 3), 2},",
+                "        {155, 23, #datetime(2026, 10, 12, 16, 32, 48), 4},",
+                "        {156, 20, #datetime(2026, 10, 12, 16, 35, 55), 16},",
+                "        {157, 19, #datetime(2026, 10, 12, 16, 57, 52), 16},",
+                "        {158, 33, #datetime(2026, 10, 12, 17, 26, 11), 6},",
+                "        {159, 9, #datetime(2026, 10, 13, 9, 7, 41), 8},",
+                "        {160, 3, #datetime(2026, 10, 13, 10, 6, 54), 16},",
+                "        {161, 40, #datetime(2026, 10, 13, 10, 32, 24), 16},",
+                "        {162, 8, #datetime(2026, 10, 13, 10, 43, 21), 16},",
+                "        {163, 7, #datetime(2026, 10, 13, 10, 58, 34), 12},",
+                "        {164, 11, #datetime(2026, 10, 13, 13, 36, 52), 2},",
+                "        {165, 32, #datetime(2026, 10, 13, 13, 56, 27), 16},",
+                "        {166, 25, #datetime(2026, 10, 13, 14, 25, 55), 5},",
+                "        {167, 9, #datetime(2026, 10, 13, 15, 39, 2), 2},",
+                "        {168, 1, #datetime(2026, 10, 13, 15, 40, 36), 16},",
+                "        {169, 9, #datetime(2026, 10, 13, 16, 27, 12), 5},",
+                "        {170, 41, #datetime(2026, 10, 13, 16, 35, 40), 6},",
+                "        {171, 1, #datetime(2026, 10, 13, 16, 47, 29), 6},",
+                "        {172, 10, #datetime(2026, 10, 13, 17, 14, 53), 8},",
+                "        {173, 33, #datetime(2026, 10, 13, 17, 29, 29), 3},",
+                "        {174, 3, #datetime(2026, 10, 13, 17, 59, 48), 4},",
+                "        {175, 29, #datetime(2026, 10, 14, 8, 33, 6), 8},",
+                "        {176, 4, #datetime(2026, 10, 14, 8, 59, 27), 20},",
+                "        {177, 14, #datetime(2026, 10, 14, 9, 8, 5), 6},",
+                "        {178, 6, #datetime(2026, 10, 14, 9, 12, 47), 6},",
+                "        {179, 6, #datetime(2026, 10, 14, 9, 15, 25), 20},",
+                "        {180, 41, #datetime(2026, 10, 14, 10, 44, 44), 1},",
+                "        {181, 23, #datetime(2026, 10, 14, 11, 1, 26), 16},",
+                "        {182, 41, #datetime(2026, 10, 14, 11, 5, 17), 2},",
+                "        {183, 10, #datetime(2026, 10, 14, 12, 13, 37), 10},",
+                "        {184, 16, #datetime(2026, 10, 14, 12, 36, 55), 4},",
+                "        {185, 24, #datetime(2026, 10, 14, 12, 46, 28), 12},",
+                "        {186, 31, #datetime(2026, 10, 14, 12, 54, 49), 4},",
+                "        {187, 35, #datetime(2026, 10, 14, 13, 1, 19), 16},",
+                "        {188, 1, #datetime(2026, 10, 14, 13, 5, 0), 6},",
+                "        {189, 1, #datetime(2026, 10, 14, 13, 54, 29), 2},",
+                "        {190, 4, #datetime(2026, 10, 14, 14, 8, 18), 2},",
+                "        {191, 13, #datetime(2026, 10, 14, 14, 43, 25), 6},",
+                "        {192, 26, #datetime(2026, 10, 14, 15, 33, 14), 8},",
+                "        {193, 4, #datetime(2026, 10, 14, 15, 36, 20), 4},",
+                "        {194, 13, #datetime(2026, 10, 14, 16, 1, 59), 6},",
+                "        {195, 2, #datetime(2026, 10, 14, 17, 9, 26), 20},",
+                "        {196, 23, #datetime(2026, 10, 14, 17, 34, 0), 4},",
+                "        {197, 39, #datetime(2026, 10, 14, 17, 41, 35), 4},",
+                "        {198, 36, #datetime(2026, 10, 14, 17, 43, 34), 2},",
+                "        {199, 6, #datetime(2026, 10, 14, 17, 44, 18), 6},",
+                "        {200, 25, #datetime(2026, 10, 14, 17, 45, 34), 16},",
+                "        {201, 8, #datetime(2026, 10, 15, 8, 42, 2), 11},",
+                "        {202, 12, #datetime(2026, 10, 15, 8, 58, 10), 6},",
+                "        {203, 5, #datetime(2026, 10, 15, 9, 27, 42), 16},",
+                "        {204, 8, #datetime(2026, 10, 15, 10, 7, 43), 10},",
+                "        {205, 5, #datetime(2026, 10, 15, 10, 51, 40), 6},",
+                "        {206, 29, #datetime(2026, 10, 15, 11, 4, 29), 4},",
+                "        {207, 20, #datetime(2026, 10, 15, 11, 29, 31), 1},",
+                "        {208, 23, #datetime(2026, 10, 15, 11, 29, 45), 2},",
+                "        {209, 5, #datetime(2026, 10, 15, 11, 55, 23), 6},",
+                "        {210, 9, #datetime(2026, 10, 15, 12, 14, 29), 4},",
+                "        {211, 14, #datetime(2026, 10, 15, 12, 50, 43), 16},",
+                "        {212, 7, #datetime(2026, 10, 15, 13, 2, 53), 4},",
+                "        {213, 16, #datetime(2026, 10, 15, 13, 3, 49), 16},",
+                "        {214, 35, #datetime(2026, 10, 15, 13, 55, 46), 6},",
+                "        {215, 9, #datetime(2026, 10, 15, 14, 21, 22), 12},",
+                "        {216, 35, #datetime(2026, 10, 15, 15, 25, 41), 3},",
+                "        {217, 3, #datetime(2026, 10, 15, 15, 27, 34), 12},",
+                "        {218, 23, #datetime(2026, 10, 15, 16, 4, 51), 6},",
+                "        {219, 15, #datetime(2026, 10, 15, 16, 29, 44), 6},",
+                "        {220, 10, #datetime(2026, 10, 15, 16, 50, 20), 20},",
+                "        {221, 3, #datetime(2026, 10, 15, 17, 21, 30), 4},",
+                "        {222, 6, #datetime(2026, 10, 15, 17, 42, 9), 4},",
+                "        {223, 36, #datetime(2026, 10, 16, 8, 44, 48), 10},",
+                "        {224, 2, #datetime(2026, 10, 16, 8, 56, 1), 8},",
+                "        {225, 6, #datetime(2026, 10, 16, 9, 35, 23), 2},",
+                "        {226, 9, #datetime(2026, 10, 16, 9, 50, 35), 6},",
+                "        {227, 7, #datetime(2026, 10, 16, 9, 54, 4), 20},",
+                "        {228, 2, #datetime(2026, 10, 16, 10, 8, 12), 12},",
+                "        {229, 13, #datetime(2026, 10, 16, 11, 11, 7), 4},",
+                "        {230, 31, #datetime(2026, 10, 16, 11, 22, 0), 4},",
+                "        {231, 10, #datetime(2026, 10, 16, 11, 35, 4), 8},",
+                "        {232, 5, #datetime(2026, 10, 16, 12, 28, 35), 10},",
+                "        {233, 27, #datetime(2026, 10, 16, 12, 39, 35), 10},",
+                "        {234, 8, #datetime(2026, 10, 16, 14, 8, 3), 10},",
+                "        {235, 1, #datetime(2026, 10, 16, 14, 55, 47), 8},",
+                "        {236, 11, #datetime(2026, 10, 16, 15, 11, 34), 8},",
+                "        {237, 7, #datetime(2026, 10, 16, 15, 29, 53), 8},",
+                "        {238, 36, #datetime(2026, 10, 16, 15, 50, 48), 4},",
+                "        {239, 7, #datetime(2026, 10, 16, 16, 16, 58), 6},",
+                "        {240, 1, #datetime(2026, 10, 16, 16, 22, 27), 8},",
+                "        {241, 40, #datetime(2026, 10, 16, 16, 35, 4), 4},",
+                "        {242, 13, #datetime(2026, 10, 16, 16, 49, 8), 6},",
+                "        {243, 4, #datetime(2026, 10, 16, 17, 3, 43), 4},",
+                "        {244, 5, #datetime(2026, 10, 16, 17, 25, 44), 2},",
+                "        {245, 3, #datetime(2026, 10, 16, 17, 41, 13), 4},",
+                "        {246, 37, #datetime(2026, 10, 16, 17, 42, 29), 2},",
+                "        {247, 12, #datetime(2026, 10, 16, 17, 45, 5), 16},",
+                "        {248, 6, #datetime(2026, 10, 16, 17, 49, 46), 6},",
+                "        {249, 2, #datetime(2026, 10, 19, 8, 44, 6), 6},",
+                "        {250, 13, #datetime(2026, 10, 19, 9, 19, 59), 4},",
+                "        {251, 39, #datetime(2026, 10, 19, 9, 48, 23), 12},",
+                "        {252, 41, #datetime(2026, 10, 19, 10, 15, 13), 12},",
+                "        {253, 25, #datetime(2026, 10, 19, 12, 2, 39), 16},",
+                "        {254, 7, #datetime(2026, 10, 19, 12, 7, 9), 20},",
+                "        {255, 24, #datetime(2026, 10, 19, 12, 20, 55), 3},",
+                "        {256, 15, #datetime(2026, 10, 19, 12, 34, 32), 6},",
+                "        {257, 5, #datetime(2026, 10, 19, 12, 35, 49), 10},",
+                "        {258, 22, #datetime(2026, 10, 19, 12, 40, 19), 4},",
+                "        {259, 5, #datetime(2026, 10, 19, 12, 51, 50), 16},",
+                "        {260, 7, #datetime(2026, 10, 19, 12, 58, 39), 4},",
+                "        {261, 23, #datetime(2026, 10, 19, 13, 10, 28), 4},",
+                "        {262, 20, #datetime(2026, 10, 19, 13, 15, 41), 8},",
+                "        {263, 4, #datetime(2026, 10, 19, 13, 28, 52), 6},",
+                "        {264, 36, #datetime(2026, 10, 19, 13, 37, 58), 6},",
+                "        {265, 3, #datetime(2026, 10, 19, 13, 42, 11), 4},",
+                "        {266, 1, #datetime(2026, 10, 19, 13, 45, 35), 16},",
+                "        {267, 7, #datetime(2026, 10, 19, 13, 51, 11), 12},",
+                "        {268, 6, #datetime(2026, 10, 19, 14, 11, 35), 4},",
+                "        {269, 36, #datetime(2026, 10, 19, 14, 29, 50), 8},",
+                "        {270, 28, #datetime(2026, 10, 19, 14, 34, 55), 20},",
+                "        {271, 14, #datetime(2026, 10, 19, 16, 17, 39), 4},",
+                "        {272, 19, #datetime(2026, 10, 19, 16, 25, 5), 16},",
+                "        {273, 27, #datetime(2026, 10, 19, 17, 28, 14), 8},",
+                "        {274, 1, #datetime(2026, 10, 19, 17, 57, 31), 4},",
+                "        {275, 4, #datetime(2026, 10, 20, 8, 45, 3), 6},",
+                "        {276, 15, #datetime(2026, 10, 20, 9, 12, 31), 8},",
+                "        {277, 30, #datetime(2026, 10, 20, 9, 34, 28), 12},",
+                "        {278, 10, #datetime(2026, 10, 20, 9, 36, 46), 2},",
+                "        {279, 31, #datetime(2026, 10, 20, 9, 40, 16), 4},",
+                "        {280, 32, #datetime(2026, 10, 20, 9, 54, 36), 4},",
+                "        {281, 26, #datetime(2026, 10, 20, 10, 38, 28), 4},",
+                "        {282, 12, #datetime(2026, 10, 20, 11, 8, 57), 12},",
+                "        {283, 37, #datetime(2026, 10, 20, 12, 24, 7), 4},",
+                "        {284, 33, #datetime(2026, 10, 20, 12, 49, 2), 16},",
+                "        {285, 34, #datetime(2026, 10, 20, 12, 56, 13), 6},",
+                "        {286, 7, #datetime(2026, 10, 20, 13, 4, 21), 4},",
+                "        {287, 3, #datetime(2026, 10, 20, 13, 24, 29), 12},",
+                "        {288, 38, #datetime(2026, 10, 20, 13, 49, 9), 2},",
+                "        {289, 42, #datetime(2026, 10, 20, 14, 12, 34), 10},",
+                "        {290, 24, #datetime(2026, 10, 20, 16, 30, 18), 20},",
+                "        {291, 1, #datetime(2026, 10, 20, 16, 31, 9), 4},",
+                "        {292, 8, #datetime(2026, 10, 20, 16, 37, 54), 20},",
+                "        {293, 38, #datetime(2026, 10, 20, 16, 39, 28), 20},",
+                "        {294, 12, #datetime(2026, 10, 20, 16, 51, 58), 4},",
+                "        {295, 1, #datetime(2026, 10, 20, 17, 8, 51), 4},",
+                "        {296, 28, #datetime(2026, 10, 20, 17, 15, 12), 4},",
+                "        {297, 9, #datetime(2026, 10, 20, 17, 24, 43), 20},",
+                "        {298, 27, #datetime(2026, 10, 20, 17, 28, 27), 2},",
+                "        {299, 3, #datetime(2026, 10, 20, 17, 35, 26), 6},",
+                "        {300, 36, #datetime(2026, 10, 21, 9, 15, 38), 10},",
+                "        {301, 20, #datetime(2026, 10, 21, 10, 4, 1), 4},",
+                "        {302, 23, #datetime(2026, 10, 21, 10, 34, 6), 2},",
+                "        {303, 34, #datetime(2026, 10, 21, 11, 16, 22), 17},",
+                "        {304, 7, #datetime(2026, 10, 21, 12, 15, 55), 6},",
+                "        {305, 3, #datetime(2026, 10, 21, 12, 28, 43), 8},",
+                "        {306, 2, #datetime(2026, 10, 21, 14, 3, 58), 6},",
+                "        {307, 28, #datetime(2026, 10, 21, 14, 25, 40), 4},",
+                "        {308, 39, #datetime(2026, 10, 21, 14, 26, 50), 3},",
+                "        {309, 13, #datetime(2026, 10, 21, 14, 41, 45), 10},",
+                "        {310, 36, #datetime(2026, 10, 21, 14, 55, 43), 10},",
+                "        {311, 8, #datetime(2026, 10, 21, 15, 20, 25), 20},",
+                "        {312, 17, #datetime(2026, 10, 21, 15, 25, 51), 4},",
+                "        {313, 5, #datetime(2026, 10, 21, 16, 18, 35), 8},",
+                "        {314, 14, #datetime(2026, 10, 21, 16, 29, 22), 4},",
+                "        {315, 1, #datetime(2026, 10, 21, 17, 17, 16), 2},",
+                "        {316, 38, #datetime(2026, 10, 21, 17, 26, 39), 6},",
+                "        {317, 36, #datetime(2026, 10, 22, 8, 40, 23), 6},",
+                "        {318, 3, #datetime(2026, 10, 22, 8, 50, 8), 6},",
+                "        {319, 18, #datetime(2026, 10, 22, 9, 18, 18), 6},",
+                "        {320, 26, #datetime(2026, 10, 22, 9, 30, 39), 10},",
+                "        {321, 13, #datetime(2026, 10, 22, 10, 3, 56), 16},",
+                "        {322, 6, #datetime(2026, 10, 22, 10, 19, 55), 5},",
+                "        {323, 11, #datetime(2026, 10, 22, 10, 49, 35), 6},",
+                "        {324, 13, #datetime(2026, 10, 22, 12, 7, 23), 6},",
+                "        {325, 9, #datetime(2026, 10, 22, 12, 51, 31), 8},",
+                "        {326, 19, #datetime(2026, 10, 22, 12, 55, 4), 2},",
+                "        {327, 7, #datetime(2026, 10, 22, 13, 49, 16), 4},",
+                "        {328, 2, #datetime(2026, 10, 22, 14, 5, 43), 16},",
+                "        {329, 1, #datetime(2026, 10, 22, 14, 38, 58), 16},",
+                "        {330, 28, #datetime(2026, 10, 22, 15, 13, 30), 4},",
+                "        {331, 1, #datetime(2026, 10, 22, 15, 17, 58), 20},",
+                "        {332, 1, #datetime(2026, 10, 22, 15, 21, 27), 16},",
+                "        {333, 6, #datetime(2026, 10, 22, 15, 42, 22), 2},",
+                "        {334, 1, #datetime(2026, 10, 22, 15, 54, 35), 16},",
+                "        {335, 2, #datetime(2026, 10, 22, 16, 27, 36), 4},",
+                "        {336, 13, #datetime(2026, 10, 22, 17, 23, 29), 2},",
+                "        {337, 15, #datetime(2026, 10, 22, 17, 32, 1), 10},",
+                "        {338, 1, #datetime(2026, 10, 22, 17, 48, 16), 12},",
+                "        {339, 18, #datetime(2026, 10, 23, 9, 5, 59), 12},",
+                "        {340, 6, #datetime(2026, 10, 23, 10, 17, 5), 4},",
+                "        {341, 15, #datetime(2026, 10, 23, 10, 32, 46), 4},",
+                "        {342, 5, #datetime(2026, 10, 23, 11, 4, 59), 6},",
+                "        {343, 17, #datetime(2026, 10, 23, 11, 20, 33), 20},",
+                "        {344, 31, #datetime(2026, 10, 23, 12, 44, 27), 16},",
+                "        {345, 5, #datetime(2026, 10, 23, 13, 1, 21), 2},",
+                "        {346, 27, #datetime(2026, 10, 23, 13, 22, 51), 16},",
+                "        {347, 2, #datetime(2026, 10, 23, 13, 27, 5), 4},",
+                "        {348, 27, #datetime(2026, 10, 23, 14, 28, 53), 20},",
+                "        {349, 22, #datetime(2026, 10, 23, 14, 34, 5), 8},",
+                "        {350, 10, #datetime(2026, 10, 23, 15, 2, 40), 14},",
+                "        {351, 16, #datetime(2026, 10, 23, 16, 26, 50), 2},",
+                "        {352, 23, #datetime(2026, 10, 23, 16, 39, 7), 4},",
+                "        {353, 1, #datetime(2026, 10, 23, 17, 20, 51), 12},",
+                "        {354, 14, #datetime(2026, 10, 23, 17, 33, 6), 16},",
+                "        {355, 42, #datetime(2026, 10, 26, 8, 41, 1), 6},",
+                "        {356, 9, #datetime(2026, 10, 26, 8, 41, 6), 6},",
+                "        {357, 14, #datetime(2026, 10, 26, 8, 52, 9), 12},",
+                "        {358, 18, #datetime(2026, 10, 26, 9, 6, 22), 12},",
+                "        {359, 4, #datetime(2026, 10, 26, 9, 27, 46), 6},",
+                "        {360, 39, #datetime(2026, 10, 26, 9, 44, 44), 4},",
+                "        {361, 2, #datetime(2026, 10, 26, 9, 55, 39), 20},",
+                "        {362, 19, #datetime(2026, 10, 26, 10, 1, 28), 8},",
+                "        {363, 4, #datetime(2026, 10, 26, 10, 45, 6), 6},",
+                "        {364, 9, #datetime(2026, 10, 26, 10, 46, 6), 20},",
+                "        {365, 11, #datetime(2026, 10, 26, 11, 6, 46), 20},",
+                "        {366, 38, #datetime(2026, 10, 26, 11, 18, 38), 6},",
+                "        {367, 11, #datetime(2026, 10, 26, 11, 43, 9), 20},",
+                "        {368, 20, #datetime(2026, 10, 26, 11, 54, 32), 4},",
+                "        {369, 6, #datetime(2026, 10, 26, 12, 12, 54), 2},",
+                "        {370, 2, #datetime(2026, 10, 26, 13, 4, 42), 2},",
+                "        {371, 1, #datetime(2026, 10, 26, 13, 29, 18), 16},",
+                "        {372, 10, #datetime(2026, 10, 26, 13, 35, 30), 16},",
+                "        {373, 8, #datetime(2026, 10, 26, 14, 7, 43), 2},",
+                "        {374, 7, #datetime(2026, 10, 26, 14, 9, 20), 16},",
+                "        {375, 19, #datetime(2026, 10, 26, 14, 30, 14), 2},",
+                "        {376, 3, #datetime(2026, 10, 26, 15, 18, 2), 4},",
+                "        {377, 13, #datetime(2026, 10, 26, 15, 42, 46), 4},",
+                "        {378, 38, #datetime(2026, 10, 26, 16, 1, 12), 8},",
+                "        {379, 5, #datetime(2026, 10, 26, 16, 40, 26), 6},",
+                "        {380, 29, #datetime(2026, 10, 26, 16, 47, 21), 6},",
+                "        {381, 9, #datetime(2026, 10, 26, 17, 15, 14), 4},",
+                "        {382, 37, #datetime(2026, 10, 26, 17, 18, 40), 4},",
+                "        {383, 6, #datetime(2026, 10, 26, 17, 18, 51), 10},",
+                "        {384, 8, #datetime(2026, 10, 26, 17, 19, 13), 12},",
+                "        {385, 16, #datetime(2026, 10, 27, 8, 43, 22), 5},",
+                "        {386, 17, #datetime(2026, 10, 27, 9, 8, 35), 6},",
+                "        {387, 3, #datetime(2026, 10, 27, 10, 5, 12), 4},",
+                "        {388, 1, #datetime(2026, 10, 27, 10, 24, 49), 2},",
+                "        {389, 17, #datetime(2026, 10, 27, 11, 38, 51), 4},",
+                "        {390, 15, #datetime(2026, 10, 27, 12, 33, 37), 4},",
+                "        {391, 40, #datetime(2026, 10, 27, 14, 1, 30), 6},",
+                "        {392, 3, #datetime(2026, 10, 27, 14, 11, 40), 12},",
+                "        {393, 22, #datetime(2026, 10, 27, 14, 18, 36), 2}",
+                "        }),",
+                "    Tarihli = Table.AddColumn(Kaynak, \"Tarih\", each DateTime.Date([YuklemeZamani]), type date),",
+                "    Sirali = Table.Sort(Tarihli, {{\"YuklemeZamani\", Order.Descending}}),",
+                "    Indeksli = Table.AddIndexColumn(Sirali, \"SonGirisSirasi\", 1, 1, Int64.Type)",
+                "in",
+                "    Indeksli"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Tarih",
+        "lineageTag": "39d2badb-f2fd-4211-914d-1d86e9fabac9",
+        "columns": [
+          {
+            "name": "Tarih",
+            "dataType": "dateTime",
+            "sourceColumn": "Tarih",
+            "lineageTag": "0e1ee365-b4a8-47de-9e82-4e0a47b7b771",
+            "summarizeBy": "none",
+            "formatString": "dd.MM.yyyy",
+            "annotations": [
+              {
+                "name": "UnderlyingDateTimeDataType",
+                "value": "Date"
+              }
+            ]
+          },
+          {
+            "name": "Donem",
+            "dataType": "string",
+            "sourceColumn": "Donem",
+            "lineageTag": "3f44d7f4-2127-41ef-9d9a-0c958586042a",
+            "summarizeBy": "none",
+            "sortByColumn": "DonemNo"
+          },
+          {
+            "name": "DonemNo",
+            "dataType": "int64",
+            "sourceColumn": "DonemNo",
+            "lineageTag": "93be3fff-cf55-4d61-935d-366ff2ca864a",
+            "summarizeBy": "none",
+            "formatString": "0",
+            "isHidden": true
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Tarih",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Baslangic = #date(2026, 10, 1),",
+                "    Bitis = #date(2026, 10, 27),",
+                "    Gunler = List.Dates(Baslangic, Duration.Days(Bitis - Baslangic) + 1, #duration(1, 0, 0, 0)),",
+                "    Tablo = Table.FromList(Gunler, Splitter.SplitByNothing(), {\"Tarih\"}),",
+                "    Tipli = Table.TransformColumnTypes(Tablo, {{\"Tarih\", type date}}),",
+                "    Donem = Table.AddColumn(Tipli, \"Donem\", each Text.Proper(Date.ToText([Tarih], [Format = \"MMMM yyyy\", Culture = \"tr-TR\"])), type text),",
+                "    DonemNo = Table.AddColumn(Donem, \"DonemNo\", each Date.Year([Tarih]) * 100 + Date.Month([Tarih]), Int64.Type)",
+                "in",
+                "    DonemNo"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Seri",
+        "lineageTag": "46172613-ee1d-4cc5-90d4-a21c2b932cfe",
+        "columns": [
+          {
+            "name": "SeriNo",
+            "dataType": "int64",
+            "sourceColumn": "SeriNo",
+            "lineageTag": "452b81ff-ac63-45a2-9d39-036243e80903",
+            "summarizeBy": "none",
+            "formatString": "0",
+            "isHidden": true
+          },
+          {
+            "name": "Seri",
+            "dataType": "string",
+            "sourceColumn": "Seri",
+            "lineageTag": "e90e9fcb-4886-4968-adf6-056003765ebe",
+            "summarizeBy": "none",
+            "sortByColumn": "SeriNo"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Seri",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Kaynak = #table(type table [SeriNo = Int64.Type, Seri = text], {",
+                "        {1, \"Sen\"}, {2, \"Lider\"}, {3, \"Bir öndeki\"}, {4, \"Bir arkadaki\"}",
+                "    })",
+                "in",
+                "    Kaynak"
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "name": "75b5c0d1-4747-46d8-bb27-2ae2c6b652b8",
+        "fromTable": "Challenge",
+        "fromColumn": "KisiID",
+        "toTable": "Kisiler",
+        "toColumn": "KisiID"
+      },
+      {
+        "name": "b7cacbeb-c029-48d8-848d-a3a7fbe1cd92",
+        "fromTable": "Challenge",
+        "fromColumn": "Tarih",
+        "toTable": "Tarih",
+        "toColumn": "Tarih"
+      }
+    ],
+    "annotations": [
+      {
+        "name": "PBI_QueryOrder",
+        "value": "[\"_Olculer\", \"Kisiler\", \"Challenge\", \"Tarih\", \"Seri\"]"
+      },
+      {
+        "name": "__PBI_TimeIntelligenceEnabled",
+        "value": "0"
+      }
+    ]
+  }
+}

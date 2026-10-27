@@ -1,0 +1,130 @@
+{
+  "name": "TEU Challenge",
+  "dataColors": [
+    "#EB6834",
+    "#2A78D6",
+    "#8A8886",
+    "#C8C6C4",
+    "#1BAF7A",
+    "#6250D6",
+    "#EDA100",
+    "#E87BA4"
+  ],
+  "background": "#FFFFFF",
+  "foreground": "#252423",
+  "tableAccent": "#2A78D6",
+  "good": "#107C10",
+  "neutral": "#EDA100",
+  "bad": "#C50F1F",
+  "textClasses": {
+    "callout": {
+      "fontSize": 36,
+      "fontFace": "Segoe UI Semibold",
+      "color": "#252423"
+    },
+    "title": {
+      "fontSize": 12,
+      "fontFace": "Segoe UI Semibold",
+      "color": "#252423"
+    },
+    "header": {
+      "fontSize": 12,
+      "fontFace": "Segoe UI Semibold",
+      "color": "#252423"
+    },
+    "label": {
+      "fontSize": 10,
+      "fontFace": "Segoe UI",
+      "color": "#605E5C"
+    }
+  },
+  "visualStyles": {
+    "*": {
+      "*": {
+        "background": [
+          {
+            "show": true,
+            "color": {
+              "solid": {
+                "color": "#FFFFFF"
+              }
+            },
+            "transparency": 0
+          }
+        ],
+        "border": [
+          {
+            "show": true,
+            "color": {
+              "solid": {
+                "color": "#E1DFDD"
+              }
+            },
+            "radius": 8
+          }
+        ],
+        "dropShadow": [
+          {
+            "show": true,
+            "preset": "Custom",
+            "position": "Outer",
+            "color": {
+              "solid": {
+                "color": "#000000"
+              }
+            },
+            "transparency": 92,
+            "shadowBlur": 6,
+            "shadowDistance": 1,
+            "shadowSpread": 0,
+            "angle": 90
+          }
+        ],
+        "padding": [
+          {
+            "top": 12,
+            "bottom": 12,
+            "left": 16,
+            "right": 16
+          }
+        ],
+        "title": [
+          {
+            "show": true,
+            "fontSize": 12,
+            "bold": true,
+            "fontColor": {
+              "solid": {
+                "color": "#252423"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "page": {
+      "*": {
+        "background": [
+          {
+            "color": {
+              "solid": {
+                "color": "#F3F2F1"
+              }
+            },
+            "transparency": 0
+          }
+        ],
+        "outspace": [
+          {
+            "color": {
+              "solid": {
+                "color": "#F3F2F1"
+              }
+            },
+            "transparency": 0
+          }
+        ]
+      }
+    }
+  }
+}

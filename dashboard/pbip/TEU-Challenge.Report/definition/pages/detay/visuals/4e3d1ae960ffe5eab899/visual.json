@@ -1,0 +1,257 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
+  "name": "4e3d1ae960ffe5eab899",
+  "position": {
+    "x": 24,
+    "y": 104,
+    "z": 9000,
+    "height": 928,
+    "width": 1872,
+    "tabOrder": 9000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Challenge"
+                    }
+                  },
+                  "Property": "YuklemeZamani"
+                }
+              },
+              "queryRef": "Challenge.YuklemeZamani",
+              "nativeQueryRef": "YuklemeZamani",
+              "displayName": "Yükleme zamanı"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Challenge"
+                    }
+                  },
+                  "Property": "KayitID"
+                }
+              },
+              "queryRef": "Challenge.KayitID",
+              "nativeQueryRef": "KayitID",
+              "displayName": "Kayıt no"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Kisiler"
+                    }
+                  },
+                  "Property": "Kisi"
+                }
+              },
+              "queryRef": "Kisiler.Kisi",
+              "nativeQueryRef": "Kisi",
+              "displayName": "Kişi"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Kisiler"
+                    }
+                  },
+                  "Property": "Email"
+                }
+              },
+              "queryRef": "Kisiler.Email",
+              "nativeQueryRef": "Email",
+              "displayName": "E-posta"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Kisiler"
+                    }
+                  },
+                  "Property": "Bolge"
+                }
+              },
+              "queryRef": "Kisiler.Bolge",
+              "nativeQueryRef": "Bolge",
+              "displayName": "Bölge"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Kisiler"
+                    }
+                  },
+                  "Property": "Yonetici"
+                }
+              },
+              "queryRef": "Kisiler.Yonetici",
+              "nativeQueryRef": "Yonetici",
+              "displayName": "Yönetici"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Olculer"
+                    }
+                  },
+                  "Property": "Toplam TEU"
+                }
+              },
+              "queryRef": "_Olculer.Toplam TEU",
+              "nativeQueryRef": "Toplam TEU",
+              "displayName": "TEU"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Challenge"
+                  }
+                },
+                "Property": "YuklemeZamani"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "columnHeaders": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#605E5C'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "grid": [
+        {
+          "properties": {
+            "gridHorizontal": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "gridHorizontalColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#EDEBE9'"
+                    }
+                  }
+                }
+              }
+            },
+            "rowPadding": {
+              "expr": {
+                "Literal": {
+                  "Value": "4D"
+                }
+              }
+            },
+            "textSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "12D"
+                }
+              }
+            },
+            "bold": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#252423'"
+                    }
+                  }
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Tüm girişler'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}
