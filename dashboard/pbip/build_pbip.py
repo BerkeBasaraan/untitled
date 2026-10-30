@@ -24,6 +24,7 @@ hexid = lambda: "%020x" % rng.getrandbits(80)
 
 # Renkler (tasarımdaki sistemle aynı)
 ME, PRIMARY, CONTEXT, DARK_GREY = "#EB6834", "#2A78D6", "#C8C6C4", "#8A8886"
+ACCENT, ACCENT_2, LIGHT, LIGHT_2 = "#FF7A2F", "#F6B73C", "#F5F2EE", "#B3ADA6"  # Panel (koyu) sayfası
 CANVAS, TEXT, TEXT2, ME_ROW = "#F3F2F1", "#252423", "#605E5C", "#FDF0EA"
 
 # ---------------------------------------------------------------- Sahte veri
@@ -99,6 +100,8 @@ final, yesterday = totals_until(LAST_DAY), totals_until(LAST_DAY - timedelta(1))
 rank = lambda tot, pid: 1 + sum(v > tot.get(pid, 0) for v in tot.values())
 assert [final[i] for i in range(1, 16)] == [t for _, _, t in TOP]
 assert rank(final, 3) == 3 and rank(yesterday, 3) == 4, "Can Demir dün 4., bugün 3. olmalı"
+tip_rng = random.Random(40)
+tips = [tip_rng.choices(["20' DC", "40' HC", "Reefer"], weights=[5, 4, 1])[0] for _ in entries]
 
 # ---------------------------------------------------------------- Yardımcılar
 
@@ -163,7 +166,7 @@ def mrow(values):
 kisi_rows = ",\n        ".join(
     mrow([i, n, email(n), r, MANAGERS[r], 250]) for i, (n, r, _) in enumerate(people, start=1)
 )
-kayit_rows = ",\n        ".join(mrow([i, pid, z, t]) for i, (pid, z, t) in enumerate(entries, start=1))
+kayit_rows = ",\n        ".join(mrow([i, pid, z, t, tip]) for i, ((pid, z, t), tip) in enumerate(zip(entries, tips), start=1))
 
 M_KISILER = f"""
 let
@@ -178,9 +181,9 @@ in
 """
 M_CHALLENGE = f"""
 let
-    // Gerçek veride bu adımı challenge tablonuzla değiştirin (sütunlar: KayitID, KisiID, YuklemeZamani, TEU).
+    // Gerçek veride bu adımı challenge tablonuzla değiştirin (sütunlar: KayitID, KisiID, YuklemeZamani, TEU, KonteynerTipi).
     Kaynak = #table(
-        type table [KayitID = Int64.Type, KisiID = Int64.Type, YuklemeZamani = datetime, TEU = Int64.Type],
+        type table [KayitID = Int64.Type, KisiID = Int64.Type, YuklemeZamani = datetime, TEU = Int64.Type, KonteynerTipi = text],
         {{
         {kayit_rows}
         }}),
@@ -198,9 +201,10 @@ let
     Tablo = Table.FromList(Gunler, Splitter.SplitByNothing(), {"Tarih"}),
     Tipli = Table.TransformColumnTypes(Tablo, {{"Tarih", type date}}),
     Donem = Table.AddColumn(Tipli, "Donem", each Text.Proper(Date.ToText([Tarih], [Format = "MMMM yyyy", Culture = "tr-TR"])), type text),
-    DonemNo = Table.AddColumn(Donem, "DonemNo", each Date.Year([Tarih]) * 100 + Date.Month([Tarih]), Int64.Type)
+    DonemNo = Table.AddColumn(Donem, "DonemNo", each Date.Year([Tarih]) * 100 + Date.Month([Tarih]), Int64.Type),
+    GunEtiket = Table.AddColumn(DonemNo, "GunEtiket", each Text.From(Date.Day([Tarih])) & " " & Date.ToText([Tarih], [Format = "ddd", Culture = "tr-TR"]), type text)
 in
-    DonemNo
+    GunEtiket
 """
 M_SERI = """
 let
@@ -368,6 +372,77 @@ VAR aktif =
         FILTER ( Kisiler, CALCULATE ( COUNTROWS ( Challenge ), Tarih[Tarih] > d - 7, Tarih[Tarih] <= d ) > 0 )
     )
 RETURN DIVIDE ( aktif, [Kişi Sayısı] )""", "0%", "Son 7 günde en az bir giriş yapanların oranı."),
+    # --- Panel sayfası
+    ("Benim Adım", """
+VAR em = [Aktif E-posta]
+RETURN CALCULATE ( SELECTEDVALUE ( Kisiler[Kisi] ), REMOVEFILTERS ( Kisiler ), Kisiler[Email] = em )""", None, None),
+    ("Benim Bölgem", """
+VAR em = [Aktif E-posta]
+RETURN CALCULATE ( SELECTEDVALUE ( Kisiler[Bolge] ), REMOVEFILTERS ( Kisiler ), Kisiler[Email] = em )""", None, None),
+    ("Benim Rolüm", '"Satış · " & [Benim Bölgem]', None, None),
+    ("Selamlama", """
+VAR ad = [Benim Adım]
+VAR ilkAd = LEFT ( ad, SEARCH ( " ", ad & " " ) - 1 )
+RETURN "Merhaba " & ilkAd & ", bugün " & [Benim Sıram] & ". sıradasın\"""", None, None),
+    ("Hedefe Kalan TEU", "MAX ( 0, [Benim Hedef] - [Benim TEU] )", '#,0" TEU"', None),
+    ("Üst Sıra Metin", """
+VAR s = [Benim Sıram]
+RETURN
+    IF ( s = 1, "Zirvedesin, farkı koru!", s - 1 & ". sıraya " & FORMAT ( [Üsttekiyle Fark], "#,0" ) & " TEU" )""",
+     None, None),
+    ("Haftalık Değişim", """
+VAR d = [Son Veri Günü]
+VAR buHafta = CALCULATE ( [Benim TEU], Tarih[Tarih] > d - 7, Tarih[Tarih] <= d )
+VAR gecen = CALCULATE ( [Benim TEU], Tarih[Tarih] > d - 14, Tarih[Tarih] <= d - 7 )
+RETURN FORMAT ( buHafta - gecen, "+#,0;-#,0;0" ) & " TEU geçen haftaya göre\"""", None, None),
+    ("Challenge Bitiş", "DATE ( 2026, 10, 31 )", "dd.MM.yyyy", "Challenge'ın son günü; yeni dönemde güncelleyin."),
+    ("Kalan İş Günü", """
+VAR d = [Son Veri Günü]
+VAR bitis = [Challenge Bitiş]
+RETURN
+    IF ( d >= bitis, 0, COUNTROWS ( FILTER ( CALENDAR ( d + 1, bitis ), WEEKDAY ( [Date], 2 ) < 6 ) ) + 0 )""",
+     "0", None),
+    ("Günlük Ortalama", """
+VAR gunler = COUNTROWS ( FILTER ( ALLSELECTED ( Tarih[Tarih] ), WEEKDAY ( Tarih[Tarih], 2 ) < 6 ) )
+RETURN DIVIDE ( [Benim TEU], gunler )""", '#,0.0" TEU"', "İş günü başına ortalama TEU."),
+    ("Gereken Tempo", "DIVIDE ( [Hedefe Kalan TEU], [Kalan İş Günü] )", '#,0.0" TEU/gün"', None),
+    ("Dönem Etiketi", 'SELECTEDVALUE ( Tarih[Donem], "Tüm dönem" ) & " toplamı TEU"', None, None),
+    ("Şirket Alt Metin", """
+[Katılımcı Sayısı] & " kişi · " & FORMAT ( COUNTROWS ( Challenge ), "#,0" ) & " giriş\"""", None, None),
+    ("Lider Metin", """
+VAR t = ADDCOLUMNS ( ALLSELECTED ( Kisiler[Kisi] ), "@teu", [Toplam TEU] )
+VAR enYuksek = MAXX ( t, [@teu] )
+RETURN
+    CONCATENATEX ( TOPN ( 1, FILTER ( t, [@teu] = enYuksek ), Kisiler[Kisi], ASC ), Kisiler[Kisi] )
+        & " · " & FORMAT ( enYuksek, "#,0" )""", None, None),
+    ("Lider Bölge Metin", """
+VAR t = ADDCOLUMNS ( ALLSELECTED ( Kisiler[Bolge] ), "@teu", [Toplam TEU] )
+VAR enYuksek = MAXX ( t, [@teu] )
+RETURN
+    CONCATENATEX ( TOPN ( 1, FILTER ( t, [@teu] = enYuksek ), Kisiler[Bolge], ASC ), Kisiler[Bolge] )
+        & " · " & FORMAT ( enYuksek, "#,0" )""", None, None),
+    ("Günlük Şirket Rengi", 'IF ( MAX ( Tarih[Tarih] ) = [Son Veri Günü], "%s", "#8C8782" )' % ACCENT, None, None),
+    ("Son 7 Gün Benim TEU", """
+VAR d = [Son Veri Günü]
+VAR g = MAX ( Tarih[Tarih] )
+RETURN IF ( g > d - 7 && g <= d, [Benim TEU] )""", "#,0", None),
+    ("Son 7 Gün Sen", """
+VAR d = [Son Veri Günü]
+RETURN IF ( MAX ( Tarih[Tarih] ) > d - 7, CALCULATE ( [Yarış TEU], Seri[SeriNo] = 1 ) )""", "#,0", None),
+    ("Son 7 Gün Öndeki", """
+VAR d = [Son Veri Günü]
+RETURN IF ( MAX ( Tarih[Tarih] ) > d - 7, CALCULATE ( [Yarış TEU], Seri[SeriNo] = 3 ) )""", "#,0", None),
+    ("Hedef Etiketi", '"Hedef " & FORMAT ( [Benim Hedef], "#,0" ) & " TEU"', None, None),
+    ("Hedef İlerleme Metin", 'FORMAT ( [Benim TEU], "#,0" ) & " / " & FORMAT ( [Benim Hedef], "#,0" ) & " TEU"',
+     None, None),
+    ("Bölge İçi Metin", """
+VAR bolge = [Benim Bölgem]
+VAR benim = [Benim TEU]
+VAR kisiler =
+    CALCULATETABLE ( VALUES ( Kisiler[Kisi] ), REMOVEFILTERS ( Kisiler ), Kisiler[Bolge] = bolge )
+VAR sira =
+    COUNTROWS ( FILTER ( kisiler, CALCULATE ( [Toplam TEU], REMOVEFILTERS ( Kisiler[Bolge] ) ) > benim ) ) + 1
+RETURN bolge & " bölgesinde " & sira & ". sıradasın · " & [Kalan İş Günü] & " iş günü kaldı\"""", None, None),
     ("Kümülatif TEU", """
 VAR gun = MAX ( Tarih[Tarih] )
 RETURN IF ( gun > [Son Veri Günü], BLANK (), CALCULATE ( [Toplam TEU], Tarih[Tarih] <= gun ) )""", "#,0", None),
@@ -422,12 +497,14 @@ model = {
             table("Challenge", [
                 column("KayitID", "int64", "0"), column("KisiID", "int64", "0", hidden=True),
                 column("YuklemeZamani", "dateTime", "dd.MM.yyyy HH:mm"), column("TEU", "int64", "#,0", "sum"),
+                column("KonteynerTipi", "string"),
                 column("Tarih", "dateTime", "dd.MM.yyyy", hidden=True, date_only=True),
                 column("SonGirisSirasi", "int64", "0", hidden=True),
             ], M_CHALLENGE),
             table("Tarih", [
                 column("Tarih", "dateTime", "dd.MM.yyyy", date_only=True),
                 column("Donem", "string", sort_by="DonemNo"), column("DonemNo", "int64", "0", hidden=True),
+                column("GunEtiket", "string", sort_by="Tarih"),
             ], M_TARIH),
             table("Seri", [column("SeriNo", "int64", "0", hidden=True), column("Seri", "string", sort_by="SeriNo")],
                   M_SERI),
@@ -560,13 +637,22 @@ def bar_chart(x, y, w, h, category, value, z, title_obj, fill=None, sort_measure
                   sort=[(sort_measure or value, "Descending")])
 
 
-def page(name, display, visuals):
+def page(name, display, visuals, image=None):
     base = REPORT / "definition" / "pages" / name
+    background = props(color=solid(CANVAS), transparency=0)
+    if image:
+        background = props(transparency=0)
+        background[0]["properties"]["image"] = {"image": {
+            "name": lit(image),
+            "url": {"expr": {"ResourcePackageItem": {
+                "PackageName": "RegisteredResources", "PackageType": 1, "ItemName": image}}},
+            "scaling": lit("Fit"),
+        }}
     write(base / "page.json", {
         "$schema": f"{SCHEMA}/item/report/definition/page/2.0.0/schema.json",
         "name": name, "displayName": display, "displayOption": "FitToPage", "height": 1080, "width": 1920,
-        "objects": {"background": props(color=solid(CANVAS), transparency=0),
-                    "outspace": props(color=solid(CANVAS), transparency=0)},
+        "objects": {"background": background,
+                    "outspace": props(color=solid("#0B0A09" if image else CANVAS), transparency=0)},
     })
     for v in visuals:
         write(base / "visuals" / v["name"] / "visual.json", v)
@@ -684,6 +770,115 @@ detail = visual(24, 104, 1872, 928, "tableEx", {"Values": {"projections": [
 page("detay", "Detay", header("TEU Challenge · Detay", "Tüm TEU girişleri, en yeniden eskiye")
      + [detail, footer(13000)])
 
+# Sayfa 4: Panel (konteyner gemisi arka planlı koyu tasarım)
+# Gemi sahnesi, cam paneller, ikonlar ve sabit yazılar arka plan resminde (dashboard/mockup/teu-glass.html?bg);
+# veriye bağlı her şey arka planı şeffaf Power BI görselleridir.
+PANEL_BG = "TEU_Panel_Arkaplan.png"
+
+
+def clear():
+    return {"background": props(show=False), "border": props(show=False), "dropShadow": props(show=False),
+            "title": props(show=False), "visualHeader": props(show=False)}
+
+
+def text_card(x, y, w, h, measure, size, color, z, bold=False):
+    return visual(x, y, w, h, "card", {"Values": {"projections": [proj(mea(measure))]}}, objects={
+        "labels": props(fontSize=size, color=solid(color), fontFamily="Segoe UI Semibold" if bold else "Segoe UI"),
+        "categoryLabels": props(show=False),
+        "wordWrap": props(show=True),
+    }, container=clear(), z=z)
+
+
+def dark_axes(show_values=False):
+    return {
+        "categoryAxis": props(show=True, fontSize=9, labelColor=solid(LIGHT_2), showAxisTitle=False,
+                              gridlineShow=False),
+        "valueAxis": props(show=show_values, fontSize=9, labelColor=solid(LIGHT_2), showAxisTitle=False,
+                           gridlineShow=False),
+        "legend": props(show=False),
+    }
+
+
+def dark_chart(x, y, w, h, vtype, roles, z, extra=None, sort=None):
+    objects = dark_axes()
+    objects.update(extra or {})
+    return visual(x, y, w, h, vtype, roles, objects=objects, container=clear(), z=z, sort=sort)
+
+
+def measure_color(prop, color):
+    return {"properties": {"fill": solid(color)}, "selector": {"metadata": f"_Olculer.{prop}"}}
+
+
+panel = [
+    text_card(560, 40, 800, 56, "Selamlama", 20, LIGHT, 100, bold=True),
+    text_card(1712, 36, 176, 30, "Benim Adım", 13, LIGHT, 110, bold=True),
+    text_card(1712, 64, 176, 26, "Benim Rolüm", 10, LIGHT_2, 120),
+]
+for i, (fld, x, w) in enumerate([(col("Tarih", "Donem"), 1082, 210), (col("Kisiler", "Bolge"), 1489, 96)]):
+    panel.append(visual(x, 450, w, 48, "slicer", {"Values": {"projections": [proj(fld)]}}, objects={
+        "data": props(mode="Dropdown"),
+        "header": props(show=False),
+        "items": props(fontColor=solid(LIGHT), background=solid("#1A1714"), textSize=11),
+    }, container=clear(), z=200 + i))
+
+# Satır 1: TEU'n, Sıran, Bugün
+for i, (value, note, x) in enumerate([("Benim TEU", "Hedef Açıklama", 40), ("Sıram Metin", "Sıra Açıklama", 524),
+                                      ("Bugün Benim TEU", "Bugün Açıklama", 1008)]):
+    panel += [text_card(x + 8, 640, 200, 76, value, 34, LIGHT, 300 + i * 10, bold=True),
+              text_card(x + 8, 716, 236, 52, note, 10, LIGHT_2, 301 + i * 10)]
+panel.append(dark_chart(256, 600, 236, 168, "clusteredBarChart", {
+    "Category": {"projections": [proj(col("Challenge", "KonteynerTipi"), "Konteyner tipi")]},
+    "Y": {"projections": [proj(mea("Benim TEU"), "TEU")]},
+}, 400, {"dataPoint": [{"properties": {"fill": solid(ACCENT)}}],
+         "labels": props(show=True, color=solid(LIGHT), fontSize=9)},
+    sort=[(mea("Benim TEU"), "Descending")]))
+panel.append(dark_chart(748, 596, 228, 172, "lineChart", {
+    "Category": {"projections": [proj(col("Tarih", "GunEtiket"), "Gün")]},
+    "Y": {"projections": [proj(mea("Son 7 Gün Sen"), "Sen"), proj(mea("Son 7 Gün Öndeki"), "Bir öndeki")]},
+}, 410, {"dataPoint": [measure_color("Son 7 Gün Sen", ACCENT), measure_color("Son 7 Gün Öndeki", LIGHT_2)],
+         "lineStyles": props(strokeWidth=3, showMarker=False),
+         "legend": props(show=True, position="Top", fontSize=9, labelColor=solid(LIGHT_2), showTitle=False),
+         "valueAxis": props(show=True, fontSize=9, labelColor=solid(LIGHT_2), showAxisTitle=False,
+                            gridlineShow=False)}))
+panel.append(dark_chart(1240, 596, 220, 172, "clusteredColumnChart", {
+    "Category": {"projections": [proj(col("Tarih", "GunEtiket"), "Gün")]},
+    "Y": {"projections": [proj(mea("Son 7 Gün Benim TEU"), "TEU")]},
+}, 420, {"dataPoint": [{"properties": {"fill": solid(ACCENT_2)}}],
+         "labels": props(show=True, color=solid(LIGHT), fontSize=9)}))
+
+# Satır 2: Hedefe kalan, Şirket yarışı
+for x, big, line1, line2, left, right in [
+    (40, "Hedefe Kalan TEU", "Üst Sıra Metin", "Haftalık Değişim", "Günlük Ortalama", "Gereken Tempo"),
+    (766, "Toplam TEU", "Dönem Etiketi", "Şirket Alt Metin", "Lider Metin", "Lider Bölge Metin"),
+]:
+    panel += [
+        text_card(x + 153, 812, 400, 58, big, 30, ACCENT, 500 + x, bold=True),
+        text_card(x + 153, 868, 400, 28, line1, 12, LIGHT, 501 + x, bold=True),
+        text_card(x + 153, 892, 400, 24, line2, 10, LIGHT_2, 502 + x),
+        text_card(x + 12, 990, 240, 40, left, 16, LIGHT, 503 + x),
+        text_card(x + 454, 990, 240, 40, right, 16, LIGHT, 504 + x),
+    ]
+panel.append(dark_chart(790, 916, 660, 52, "clusteredColumnChart", {
+    "Category": {"projections": [proj(col("Tarih", "GunEtiket"), "Gün")]},
+    "Y": {"projections": [proj(mea("Toplam TEU"), "Günlük TEU")]},
+}, 600, {"dataPoint": [{"properties": {"fill": {"solid": {"color": {"expr": mea("Günlük Şirket Rengi")}}}},
+                        "selector": {"data": [{"dataViewWildcard": {"matchingOption": 1}}]}}],
+         "categoryAxis": props(show=False), "valueAxis": props(show=False), "labels": props(show=False)}))
+
+# Sağ kart: kişisel hedef göstergesi
+panel += [
+    text_card(1586, 556, 200, 30, "Hedef Etiketi", 11, LIGHT_2, 700),
+    visual(1516, 596, 340, 230, "gauge", {
+        "Y": {"projections": [proj(mea("Benim TEU"), "TEU")]},
+        "MaxValue": {"projections": [proj(mea("Benim Hedef"), "Hedef")]},
+    }, objects={"dataPoint": props(fill=solid(ACCENT)), "calloutValue": props(show=False),
+                "labels": props(show=False)}, container=clear(), z=710),
+    text_card(1586, 760, 200, 64, "Hedef Oranı", 36, LIGHT, 720, bold=True),
+    text_card(1566, 846, 240, 30, "Hedef İlerleme Metin", 11, LIGHT_2, 730),
+    text_card(1504, 990, 364, 36, "Bölge İçi Metin", 10, LIGHT_2, 740),
+]
+page("panel", "Panel", panel, image=PANEL_BG)
+
 # ---------------------------------------------------------------- Proje dosyaları
 
 THEME = {
@@ -738,16 +933,18 @@ write(REPORT / "definition" / "report.json", {
     "themeCollection": {"customTheme": {"name": "TEU_Tema.json", "reportVersionAtImport": "5.59",
                                         "type": "RegisteredResources"}},
     "resourcePackages": [{"name": "RegisteredResources", "type": "RegisteredResources",
-                          "items": [{"name": "TEU_Tema.json", "path": "TEU_Tema.json", "type": "CustomTheme"}]}],
+                          "items": [{"name": "TEU_Tema.json", "path": "TEU_Tema.json", "type": "CustomTheme"},
+                                    {"name": PANEL_BG, "path": PANEL_BG, "type": "Image"}]}],
     "settings": {"useStylableVisualContainerHeader": True, "exportDataMode": "AllowSummarized",
                  "defaultDrillFilterOtherVisuals": True, "allowChangeFilterTypes": True,
                  "useEnhancedTooltips": True},
 })
 write(REPORT / "definition" / "pages" / "pages.json", {
     "$schema": f"{SCHEMA}/item/report/definition/pagesMetadata/1.0.0/schema.json",
-    "pageOrder": ["liderlik", "bolgeler", "detay"], "activePageName": "liderlik",
+    "pageOrder": ["panel", "liderlik", "bolgeler", "detay"], "activePageName": "panel",
 })
 write(REPORT / "StaticResources" / "RegisteredResources" / "TEU_Tema.json", THEME)
+shutil.copyfile(ROOT.parent / "mockup" / "teu-glass-bg.png", REPORT / "StaticResources" / "RegisteredResources" / PANEL_BG)
 write(ROOT / ".gitignore", "**/.pbi/localSettings.json\n**/.pbi/cache.abf")
 
 print(f"{len(people)} kişi, {len(entries)} giriş · Can Demir: {final[3]} TEU, dün {rank(yesterday, 3)}. → bugün "

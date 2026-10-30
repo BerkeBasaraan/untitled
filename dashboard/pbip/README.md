@@ -16,11 +16,20 @@ Daha eski bir Desktop sürümünde açılmazsa: **Dosya → Seçenekler → Öni
 
 | Sayfa | Görseller |
 |---|---|
+| Panel | Konteyner gemisi arka planlı koyu tasarım: selamlama, 3 KPI kartı (konteyner tipine göre TEU, son 7 gün sen vs bir öndeki, bu haftanın günlük TEU'su), hedefe kalan, şirket yarışı, kişisel hedef göstergesi |
 | Liderlik | 4 KPI kartı, ilk 15 + sen liderlik grafiği (250 TEU hedef çizgisiyle), yarış çizgi grafiği (sen / lider / bir öndeki / bir arkadaki), son girişler, bölge sıralaması |
 | Bölgeler | Bölge KPI'ları, bölge toplamları, bölgelerin kümülatif yarışı, bölge özeti tablosu |
 | Detay | Tüm girişler tablosu |
 
 Tablolar: `Kisiler` (42 kişi, 5 bölge), `Challenge` (393 sahte giriş, 1–27 Ekim 2026), `Tarih`, `Seri` (yarış grafiği lejantı), `_Olculer` (tüm DAX ölçüleri, açıklamalarıyla).
+
+## Panel sayfası nasıl kuruldu?
+
+Power BI görsellerin arkasını bulanıklaştıramaz. Bu yüzden gemi sahnesi, cam paneller, ikonlar ve sabit yazılar tek bir **sayfa arka plan resmine** (`TEU_Panel_Arkaplan.png`) gömüldü. Veriye bağlı her şey (sayılar, grafikler, gösterge, dilimleyiciler) bu resmin üstünde arka planı şeffaf Power BI görselleridir.
+
+- Bir başlığı veya ikonu değiştirmek için `dashboard/mockup/teu-glass.html?bg` sayfasını düzenleyip 1920×1080 ekran görüntüsünü yeniden alın, sonra betiği çalıştırın.
+- Görselleri taşırsanız arka plandaki cam panellerle hizası bozulur. Görünüm → Kılavuz çizgileri / Izgaraya yasla seçenekleri işe yarar.
+- Sol menü ikonları, "TEU Ekle" ve "Rapor Oluştur" düğmeleri resmin parçasıdır, tıklanmaz. Sayfalar arasında Power BI'ın sayfa sekmeleriyle geçin.
 
 ## "Sen" kim?
 

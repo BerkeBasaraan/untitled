@@ -351,6 +351,17 @@ const ACC = "#FF7A2F", ACC2 = "#F6B73C";
   el("path", { d: d1, fill: "none", stroke: ACC, "stroke-width": 2 }, s);
   el("path", { d: d2, fill: "none", stroke: "rgba(245,242,238,.5)", "stroke-width": 2 }, s);
 })();
+/* ---------- ?bg: Power BI sayfa arka planı (sadece sabit öğeler) ---------- */
+if (location.search.includes("bg")) {
+  const hide = e => (e.style.visibility = "hidden");
+  document.querySelectorAll(".hello, .big, .note, #types, #race, #week, #pulse, #chips, #gauge, .stat b, .avatar, .user > div:last-child").forEach(hide);
+  document.querySelectorAll(".glass .center").forEach(e => { if (!e.textContent.includes("Kişisel hedef")) hide(e); });
+  // Tarih ve bölge kutuları Power BI'da dilimleyici olur: çerçeve kalır, yazı gider
+  document.querySelectorAll(".pill").forEach(p => {
+    if (/Ekim|Bölgeler/.test(p.textContent)) p.style.width = p.getBoundingClientRect().width + "px";
+    if (/Ekim|Bölgeler/.test(p.textContent)) p.childNodes.forEach(n => n.nodeType === 1 ? hide(n) : (n.textContent = ""));
+  });
+}
 </script>
 </body>
 </html>

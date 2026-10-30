@@ -16,6 +16,11 @@
           "name": "TEU_Tema.json",
           "path": "TEU_Tema.json",
           "type": "CustomTheme"
+        },
+        {
+          "name": "TEU_Panel_Arkaplan.png",
+          "path": "TEU_Panel_Arkaplan.png",
+          "type": "Image"
         }
       ]
     }
