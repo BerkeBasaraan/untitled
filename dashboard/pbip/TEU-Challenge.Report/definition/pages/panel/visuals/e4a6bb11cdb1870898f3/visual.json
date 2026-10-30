@@ -2,36 +2,17 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
   "name": "e4a6bb11cdb1870898f3",
   "position": {
-    "x": 790,
-    "y": 916,
-    "z": 600,
-    "height": 52,
-    "width": 660,
-    "tabOrder": 600
+    "x": 1516,
+    "y": 596,
+    "z": 710,
+    "height": 230,
+    "width": 340,
+    "tabOrder": 710
   },
   "visual": {
-    "visualType": "clusteredColumnChart",
+    "visualType": "gauge",
     "query": {
       "queryState": {
-        "Category": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Tarih"
-                    }
-                  },
-                  "Property": "GunEtiket"
-                }
-              },
-              "queryRef": "Tarih.GunEtiket",
-              "nativeQueryRef": "GunEtiket",
-              "displayName": "Gün"
-            }
-          ]
-        },
         "Y": {
           "projections": [
             {
@@ -42,57 +23,37 @@
                       "Entity": "_Olculer"
                     }
                   },
-                  "Property": "Toplam TEU"
+                  "Property": "Benim TEU"
                 }
               },
-              "queryRef": "_Olculer.Toplam TEU",
-              "nativeQueryRef": "Toplam TEU",
-              "displayName": "Günlük TEU"
+              "queryRef": "_Olculer.Benim TEU",
+              "nativeQueryRef": "Benim TEU",
+              "displayName": "TEU"
+            }
+          ]
+        },
+        "MaxValue": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Olculer"
+                    }
+                  },
+                  "Property": "Benim Hedef"
+                }
+              },
+              "queryRef": "_Olculer.Benim Hedef",
+              "nativeQueryRef": "Benim Hedef",
+              "displayName": "Hedef"
             }
           ]
         }
       }
     },
     "objects": {
-      "categoryAxis": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "valueAxis": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "legend": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
-                }
-              }
-            }
-          }
-        }
-      ],
       "dataPoint": [
         {
           "properties": {
@@ -100,27 +61,26 @@
               "solid": {
                 "color": {
                   "expr": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "_Olculer"
-                        }
-                      },
-                      "Property": "Günlük Şirket Rengi"
+                    "Literal": {
+                      "Value": "'#FF7A2F'"
                     }
                   }
                 }
               }
             }
-          },
-          "selector": {
-            "data": [
-              {
-                "dataViewWildcard": {
-                  "matchingOption": 1
+          }
+        }
+      ],
+      "calloutValue": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
-            ]
+            }
           }
         }
       ],

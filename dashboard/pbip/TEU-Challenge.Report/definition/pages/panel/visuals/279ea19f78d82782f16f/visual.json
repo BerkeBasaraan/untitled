@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
   "name": "279ea19f78d82782f16f",
   "position": {
-    "x": 1586,
-    "y": 760,
-    "z": 720,
-    "height": 64,
-    "width": 200,
-    "tabOrder": 720
+    "x": 1504,
+    "y": 990,
+    "z": 740,
+    "height": 36,
+    "width": 364,
+    "tabOrder": 740
   },
   "visual": {
     "visualType": "card",
@@ -23,11 +23,11 @@
                       "Entity": "_Olculer"
                     }
                   },
-                  "Property": "Hedef Oranı"
+                  "Property": "Bölge İçi Metin"
                 }
               },
-              "queryRef": "_Olculer.Hedef Oranı",
-              "nativeQueryRef": "Hedef Oranı"
+              "queryRef": "_Olculer.Bölge İçi Metin",
+              "nativeQueryRef": "Bölge İçi Metin"
             }
           ]
         }
@@ -40,7 +40,7 @@
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "36D"
+                  "Value": "10D"
                 }
               }
             },
@@ -49,7 +49,7 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#F5F2EE'"
+                      "Value": "'#B3ADA6'"
                     }
                   }
                 }
@@ -58,7 +58,7 @@
             "fontFamily": {
               "expr": {
                 "Literal": {
-                  "Value": "'Segoe UI Semibold'"
+                  "Value": "'Segoe UI'"
                 }
               }
             }

@@ -813,12 +813,6 @@ panel = [
     text_card(1712, 36, 176, 30, "Benim Adım", 13, LIGHT, 110, bold=True),
     text_card(1712, 64, 176, 26, "Benim Rolüm", 10, LIGHT_2, 120),
 ]
-for i, (fld, x, w) in enumerate([(col("Tarih", "Donem"), 1082, 210), (col("Kisiler", "Bolge"), 1489, 96)]):
-    panel.append(visual(x, 450, w, 48, "slicer", {"Values": {"projections": [proj(fld)]}}, objects={
-        "data": props(mode="Dropdown"),
-        "header": props(show=False),
-        "items": props(fontColor=solid(LIGHT), background=solid("#1A1714"), textSize=11),
-    }, container=clear(), z=200 + i))
 
 # Satır 1: TEU'n, Sıran, Bugün
 for i, (value, note, x) in enumerate([("Benim TEU", "Hedef Açıklama", 40), ("Sıram Metin", "Sıra Açıklama", 524),

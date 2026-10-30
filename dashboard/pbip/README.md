@@ -38,6 +38,10 @@ Bunun yerine hazır bir resmi Power BI'da da koyabilirsiniz: Panel sayfasında b
 - Görselleri taşırsanız arka plandaki cam panellerle hizası bozulur. Görünüm → Kılavuz çizgileri / Izgaraya yasla seçenekleri işe yarar.
 - Sol menü ikonları, "TEU Ekle" ve "Rapor Oluştur" düğmeleri resmin parçasıdır, tıklanmaz. Sayfalar arasında Power BI'ın sayfa sekmeleriyle geçin.
 
+## Düğme ve menü şablonları
+
+`dashboard/mockup/sablonlar/` klasöründe Panel tasarımının yazısız, şeffaf arka planlı PNG şablonları var (2 kat çözünürlük): yuvarlak düğmeler (`daire-*`), hap şeklinde düğmeler (`hap-*`), logo ve sol menü ikonları (`menu-*`, her biri normal ve `-aktif` sürüm). Power BI'da bir Düğme ekleyip **Biçim → Düğme → Dolgu → Resim** ile kullanabilirsiniz; normal / üzerine gelince / seçili durumları için farklı sürümleri seçin. Şablonlar `sablonlar.html` dosyasından üretilir.
+
 ## "Sen" kim?
 
 Raporu açan kişi `USERPRINCIPALNAME()` ile bulunur ve `Kisiler[Email]` ile eşleştirilir. Desktop'ta e-postanız demo listesinde olmadığı için rapor **Can Demir**'i "sen" olarak gösterir. Gerçek veride herkes kendini turuncu görür.

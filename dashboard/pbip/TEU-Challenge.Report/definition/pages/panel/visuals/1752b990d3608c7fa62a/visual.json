@@ -2,15 +2,15 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
   "name": "1752b990d3608c7fa62a",
   "position": {
-    "x": 256,
-    "y": 600,
-    "z": 400,
-    "height": 168,
-    "width": 236,
-    "tabOrder": 400
+    "x": 1240,
+    "y": 596,
+    "z": 420,
+    "height": 172,
+    "width": 220,
+    "tabOrder": 420
   },
   "visual": {
-    "visualType": "clusteredBarChart",
+    "visualType": "clusteredColumnChart",
     "query": {
       "queryState": {
         "Category": {
@@ -20,15 +20,15 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Challenge"
+                      "Entity": "Tarih"
                     }
                   },
-                  "Property": "KonteynerTipi"
+                  "Property": "GunEtiket"
                 }
               },
-              "queryRef": "Challenge.KonteynerTipi",
-              "nativeQueryRef": "KonteynerTipi",
-              "displayName": "Konteyner tipi"
+              "queryRef": "Tarih.GunEtiket",
+              "nativeQueryRef": "GunEtiket",
+              "displayName": "Gün"
             }
           ]
         },
@@ -42,32 +42,15 @@
                       "Entity": "_Olculer"
                     }
                   },
-                  "Property": "Benim TEU"
+                  "Property": "Son 7 Gün Benim TEU"
                 }
               },
-              "queryRef": "_Olculer.Benim TEU",
-              "nativeQueryRef": "Benim TEU",
+              "queryRef": "_Olculer.Son 7 Gün Benim TEU",
+              "nativeQueryRef": "Son 7 Gün Benim TEU",
               "displayName": "TEU"
             }
           ]
         }
-      },
-      "sortDefinition": {
-        "sort": [
-          {
-            "field": {
-              "Measure": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "_Olculer"
-                  }
-                },
-                "Property": "Benim TEU"
-              }
-            },
-            "direction": "Descending"
-          }
-        ]
       }
     },
     "objects": {
@@ -182,7 +165,7 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#FF7A2F'"
+                      "Value": "'#F6B73C'"
                     }
                   }
                 }

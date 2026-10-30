@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
   "name": "6543681dce2fff2f7afe",
   "position": {
-    "x": 494,
-    "y": 990,
-    "z": 544,
-    "height": 40,
-    "width": 240,
-    "tabOrder": 544
+    "x": 919,
+    "y": 868,
+    "z": 1267,
+    "height": 28,
+    "width": 400,
+    "tabOrder": 1267
   },
   "visual": {
     "visualType": "card",
@@ -23,11 +23,11 @@
                       "Entity": "_Olculer"
                     }
                   },
-                  "Property": "Gereken Tempo"
+                  "Property": "Dönem Etiketi"
                 }
               },
-              "queryRef": "_Olculer.Gereken Tempo",
-              "nativeQueryRef": "Gereken Tempo"
+              "queryRef": "_Olculer.Dönem Etiketi",
+              "nativeQueryRef": "Dönem Etiketi"
             }
           ]
         }
@@ -40,7 +40,7 @@
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "16D"
+                  "Value": "12D"
                 }
               }
             },
@@ -58,7 +58,7 @@
             "fontFamily": {
               "expr": {
                 "Literal": {
-                  "Value": "'Segoe UI'"
+                  "Value": "'Segoe UI Semibold'"
                 }
               }
             }

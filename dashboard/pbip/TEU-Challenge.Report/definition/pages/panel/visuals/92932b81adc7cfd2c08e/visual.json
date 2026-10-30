@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
   "name": "92932b81adc7cfd2c08e",
   "position": {
-    "x": 919,
-    "y": 868,
-    "z": 1267,
-    "height": 28,
-    "width": 400,
-    "tabOrder": 1267
+    "x": 778,
+    "y": 990,
+    "z": 1269,
+    "height": 40,
+    "width": 240,
+    "tabOrder": 1269
   },
   "visual": {
     "visualType": "card",
@@ -23,11 +23,11 @@
                       "Entity": "_Olculer"
                     }
                   },
-                  "Property": "Dönem Etiketi"
+                  "Property": "Lider Metin"
                 }
               },
-              "queryRef": "_Olculer.Dönem Etiketi",
-              "nativeQueryRef": "Dönem Etiketi"
+              "queryRef": "_Olculer.Lider Metin",
+              "nativeQueryRef": "Lider Metin"
             }
           ]
         }
@@ -40,7 +40,7 @@
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "12D"
+                  "Value": "16D"
                 }
               }
             },
@@ -58,7 +58,7 @@
             "fontFamily": {
               "expr": {
                 "Literal": {
-                  "Value": "'Segoe UI Semibold'"
+                  "Value": "'Segoe UI'"
                 }
               }
             }

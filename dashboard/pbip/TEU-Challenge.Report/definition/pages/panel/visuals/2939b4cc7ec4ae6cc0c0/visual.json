@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
   "name": "2939b4cc7ec4ae6cc0c0",
   "position": {
-    "x": 193,
-    "y": 868,
-    "z": 541,
-    "height": 28,
-    "width": 400,
-    "tabOrder": 541
+    "x": 52,
+    "y": 990,
+    "z": 543,
+    "height": 40,
+    "width": 240,
+    "tabOrder": 543
   },
   "visual": {
     "visualType": "card",
@@ -23,11 +23,11 @@
                       "Entity": "_Olculer"
                     }
                   },
-                  "Property": "Üst Sıra Metin"
+                  "Property": "Günlük Ortalama"
                 }
               },
-              "queryRef": "_Olculer.Üst Sıra Metin",
-              "nativeQueryRef": "Üst Sıra Metin"
+              "queryRef": "_Olculer.Günlük Ortalama",
+              "nativeQueryRef": "Günlük Ortalama"
             }
           ]
         }
@@ -40,7 +40,7 @@
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "12D"
+                  "Value": "16D"
                 }
               }
             },
@@ -58,7 +58,7 @@
             "fontFamily": {
               "expr": {
                 "Literal": {
-                  "Value": "'Segoe UI Semibold'"
+                  "Value": "'Segoe UI'"
                 }
               }
             }

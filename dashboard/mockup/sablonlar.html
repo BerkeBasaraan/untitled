@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Buton Şablonları</title>
+<style>
+  /* Panel tasarımındaki düğme ve menü şablonları; her öğe şeffaf PNG olarak ayrı dışa aktarılır */
+  :root { --accent: #FF7A2F; --line: rgba(255, 255, 255, 0.12); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: transparent; padding: 24px; display: flex; flex-wrap: wrap; gap: 24px; align-items: center; }
+  .t { display: grid; place-items: center; color: rgba(245, 242, 238, .66); }
+  .t svg { stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .pill { height: 52px; border-radius: 26px; background: rgba(20, 18, 16, .55); border: 1px solid var(--line); }
+  .circle { width: 52px; }
+  .active { background: rgba(255, 122, 47, .25); border-color: rgba(255, 122, 47, .5); color: #F5F2EE; }
+  .orange { background: var(--accent); border-color: var(--accent); }
+  .nav { width: 60px; height: 60px; border-radius: 50%; border: 1px solid var(--line); background: rgba(20, 18, 16, .45); }
+  .nav.on { background: #fff; color: #111; border-color: #fff; }
+  .logo { width: 60px; height: 60px; border-radius: 50%; background: var(--accent); color: #fff; }
+  .logo svg { stroke-width: 2.2; }
+</style>
+</head>
+<body>
+<!-- Araç çubuğu düğmeleri (yazısız) -->
+<div class="t pill circle" data-file="daire-bos"></div>
+<div class="t pill circle" data-file="daire-arama"><svg width="20" height="20" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></div>
+<div class="t pill circle active" data-file="daire-aktif-bos"></div>
+<div class="t pill circle active" data-file="daire-aktif-kalem"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/></svg></div>
+<div class="t pill" style="width:218px" data-file="hap-genis"></div>
+<div class="t pill" style="width:136px" data-file="hap-orta"></div>
+<div class="t pill" style="width:104px" data-file="hap-kisa"></div>
+<div class="t pill orange" style="width:146px" data-file="hap-turuncu"></div>
+
+<!-- Sol menü -->
+<div class="t logo" data-file="logo"><svg width="30" height="30" viewBox="0 0 24 24"><path d="M3 15h18l-2 5H5z"/><path d="M6 15V9h5v6M11 11h6v4"/></svg></div>
+<div class="t nav" data-file="menu-bos"></div>
+<div class="t nav on" data-file="menu-bos-aktif"></div>
+<template id="icons">
+  <i data-name="ana-sayfa"><svg width="22" height="22" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg></i>
+  <i data-name="kupa"><svg width="22" height="22" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM17 6h3a3 3 0 0 1-3 4M7 6H4a3 3 0 0 0 3 4"/></svg></i>
+  <i data-name="grafik"><svg width="22" height="22" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></i>
+  <i data-name="liste"><svg width="22" height="22" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 11h6M9 15h4"/></svg></i>
+</template>
+<script>
+  // Her menü ikonu için normal ve aktif (seçili) sürüm
+  for (const i of document.getElementById("icons").content.querySelectorAll("i")) {
+    for (const on of [false, true]) {
+      const d = document.createElement("div");
+      d.className = "t nav" + (on ? " on" : "");
+      d.dataset.file = "menu-" + i.dataset.name + (on ? "-aktif" : "");
+      d.innerHTML = i.innerHTML;
+      document.body.appendChild(d);
+    }
+  }
+</script>
+</body>
+</html>
