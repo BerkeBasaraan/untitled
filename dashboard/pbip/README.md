@@ -29,7 +29,7 @@ Power BI görsellerin arkasını bulanıklaştıramaz. Bu yüzden gemi fotoğraf
 
 **Fotoğrafı değiştirmek için:**
 1. Fotoğraf küçükse (1000 px'ten dar) önce `dashboard/mockup/upscale_photo.py` ile yapay zekâyla 4 kat büyütün.
-2. `python3 dashboard/mockup/grade_photo.py <fotoğraf>`: fotoğrafı keskin kalacağı boyutta üst-ortaya yerleştirir, kenarlarını aynı fotoğrafın bulanık koyu kopyasına karıştırır ve tasarımın ışığına göre renklendirir (`teu-gemi-arkaplan.png`). Geminin konumu ve boyutu betiğin başındaki ayarlarla değişir.
+2. `python3 dashboard/mockup/grade_photo.py <fotoğraf>`: fotoğrafı ekranı tamamen kaplayacak şekilde ölçekleyip kırpar ve arayüze uysun diye hafifçe koyulaştırır (`teu-gemi-arkaplan.png`). Geminin dikey konumu betiğin başındaki `FOCUS_SRC` / `FOCUS_DST` ayarlarıyla değişir; konteyner istifi kartların başladığı y=520 çizgisinin üstünde kalmalı.
 3. `dashboard/mockup/teu-glass.html?photo=teu-gemi-arkaplan.png&bg` sayfasının 1920×1080 ekran görüntüsünü `teu-panel-arkaplan.png` olarak alın.
 4. `python3 dashboard/pbip/build_pbip.py` ile projeyi yeniden üretin.
 
