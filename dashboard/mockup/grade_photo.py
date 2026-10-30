@@ -1,7 +1,10 @@
-"""Gemi fotoğrafını panel tasarımının ışığına göre renklendirir ve 1920x1080 tuvale yerleştirir.
+"""Gemi fotoğrafını panel tasarımına göre yerleştirir ve renklendirir (1920x1080).
 
 Kullanım: python3 dashboard/mockup/grade_photo.py <fotoğraf> [çıktı.png]
-Gemi, kartların üstünde kalacak şekilde tuvalin üst yarısına oturtulur; alt kısım koyu denizle uzatılır.
+
+Küçük fotoğrafları ekran genişliğine büyütmek bulanık gösterir. Bu yüzden fotoğraf keskin kalacağı boyutta
+(SHARP_HEIGHT) üst-ortaya yerleştirilir; kenarları, aynı fotoğrafın büyütülüp bulanıklaştırılmış koyu bir
+kopyasına yumuşakça karışır. Fotoğraf küçükse önce upscale_photo.py ile 4 kat büyütün.
 """
 import sys
 from pathlib import Path
@@ -10,55 +13,62 @@ import numpy as np
 from PIL import Image, ImageFilter
 
 W, H = 1920, 1080
-SHIP_BOTTOM_SRC = 0.72   # fotoğrafta geminin su hattı (yüksekliğe oran)
-SHIP_BOTTOM_DST = 500    # tuvalde su hattının y konumu (kartlar 520'de başlar)
+SHARP_HEIGHT = 700     # keskin fotoğrafın tuvaldeki yüksekliği
+SHIP_BOTTOM_SRC = 0.72  # fotoğrafta geminin su hattı (yüksekliğe oran)
+SHIP_CENTER_SRC = 0.52  # fotoğrafta geminin yatay ortası (genişliğe oran)
+SHIP_BOTTOM_DST = 436  # tuvalde su hattının y konumu (kartlar 520'de başlar)
+SHIP_CENTER_DST = 1000  # tuvalde geminin yatay ortası
+FEATHER = 240          # keskin fotoğrafın kenar yumuşatma genişliği
 
 src = Path(sys.argv[1])
 out = Path(sys.argv[2]) if len(sys.argv) > 2 else Path(__file__).with_name("teu-gemi-arkaplan.png")
-
 photo = Image.open(src).convert("RGB")
-scale = W / photo.width
-photo = photo.resize((W, round(photo.height * scale)), Image.LANCZOS).filter(
-    ImageFilter.UnsharpMask(radius=2, percent=60, threshold=2))
-top = round(SHIP_BOTTOM_DST - SHIP_BOTTOM_SRC * photo.height)
 
-img = np.asarray(photo, dtype=np.float32) / 255.0
 
-# --- Renk düzenleme: soğuk mavi gündüz → akşam üstü, sıcak vurgu ---
-lum = img @ np.array([0.2126, 0.7152, 0.0722], dtype=np.float32)
-img = lum[..., None] + (img - lum[..., None]) * 0.62          # doygunluğu kıs
-img = np.clip(img, 0, 1) ** 1.45 * 0.62                        # pozlamayı düşür, orta tonları koyulaştır
-lum = img @ np.array([0.2126, 0.7152, 0.0722], dtype=np.float32)
-hi = np.clip((lum - 0.18) / 0.5, 0, 1)[..., None]              # açık tonlar → sıcak
-img = img * (1 - hi) + (img * np.array([1.22, 1.0, 0.72])) * hi
-img = img * np.array([1.02, 0.93, 0.82])                       # genel sıcak filtre
-img = np.clip(img, 0, 1)
+def to_array(im):
+    return np.asarray(im, dtype=np.float32) / 255.0
 
-# --- Tuvale yerleştir; fotoğrafın altını koyu denizle uzat ---
-canvas = np.zeros((H, W, 3), dtype=np.float32)
-y0, y1 = max(top, 0), min(top + img.shape[0], H)
-canvas[y0:y1] = img[y0 - top:y1 - top]
-if y1 < H:
-    sea = img[-40:].mean(axis=(0, 1))
-    for y in range(y1, H):
-        t = (y - y1) / max(H - y1, 1)
-        canvas[y] = sea * (1 - t) + np.array([0.03, 0.03, 0.035]) * t
-    blend = 220  # geçişi yumuşat
-    for k in range(blend):
-        y = y1 - blend + k
-        a = k / blend
-        canvas[y] = canvas[y] * (1 - a) + sea * a
-if y0 > 0:
-    canvas[:y0] = canvas[y0]
 
-# --- Işık: sağdan gelen alçak güneş parlaması (ekran karışımı) ---
-yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
-glow = np.exp(-(((xx - 1560) / 620) ** 2 + ((yy - 300) / 260) ** 2))[..., None]
-warm = np.array([1.0, 0.52, 0.18]) * 0.55
-canvas = 1 - (1 - canvas) * (1 - warm * glow)
-# su yüzeyinde yansıma şeridi
-streak = np.exp(-(((xx - 1560) / 260) ** 2)) * np.clip((yy - 500) / 120, 0, 1) * np.exp(-((yy - 560) / 200) ** 2)
-canvas = 1 - (1 - canvas) * (1 - np.array([1.0, 0.6, 0.25]) * 0.35 * streak[..., None])
+# --- Taban: tüm tuvali kaplayan, bulanık ve koyu kopya (renk ve ışık sürekliliği için) ---
+cover = max(W / photo.width, H / photo.height) * 1.1
+base = photo.resize((round(photo.width * cover), round(photo.height * cover)), Image.LANCZOS)
+left, top = (base.width - W) // 2, round(base.height * SHIP_BOTTOM_SRC - SHIP_BOTTOM_DST)
+base = base.crop((left, max(top, 0), left + W, max(top, 0) + H)).filter(ImageFilter.GaussianBlur(28))
+canvas = to_array(base) * 0.62
+
+# --- Keskin fotoğraf: üst-ortada, kenarları yumuşak maskeyle ---
+scale = SHARP_HEIGHT / photo.height
+sharp = photo.resize((round(photo.width * scale), SHARP_HEIGHT), Image.LANCZOS).filter(
+    ImageFilter.UnsharpMask(radius=1.2, percent=50, threshold=2))
+sx = round(SHIP_CENTER_DST - SHIP_CENTER_SRC * sharp.width)
+sy = round(SHIP_BOTTOM_DST - SHIP_BOTTOM_SRC * sharp.height)
+s = to_array(sharp)
+h, w = s.shape[:2]
+yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+ramp = lambda d: np.clip(d / FEATHER, 0, 1) ** 1.5
+mask = ramp(xx) * ramp(w - 1 - xx) * ramp(h - 1 - yy) * np.clip((yy + sy) / 60 + 1, 0, 1)
+x0, y0 = max(sx, 0), max(sy, 0)
+x1, y1 = min(sx + w, W), min(sy + h, H)
+region = canvas[y0:y1, x0:x1]
+m = mask[y0 - sy:y1 - sy, x0 - sx:x1 - sx][..., None]
+canvas[y0:y1, x0:x1] = region * (1 - m) + s[y0 - sy:y1 - sy, x0 - sx:x1 - sx] * m
+
+# --- Renk: mavi saat + sıcak vurgu (tasarımın turuncusuyla uyumlu) ---
+lum = canvas @ np.array([0.2126, 0.7152, 0.0722], dtype=np.float32)
+canvas = lum[..., None] + (canvas - lum[..., None]) * 0.82       # doygunluğu biraz kıs
+canvas = np.clip(canvas, 0, 1) ** 1.18 * 0.82                     # hafif koyulaştır
+lum = canvas @ np.array([0.2126, 0.7152, 0.0722], dtype=np.float32)
+hi = np.clip((lum - 0.25) / 0.45, 0, 1)[..., None]                # açık tonlar → sıcak
+canvas = canvas * (1 - hi) + canvas * np.array([1.16, 1.0, 0.8]) * hi
+lo = np.clip(1 - lum / 0.25, 0, 1)[..., None]                     # koyu tonlar → derin lacivert
+canvas = canvas * (1 - lo) + canvas * np.array([0.85, 0.95, 1.1]) * lo
+
+# --- Işık: sağ üstten alçak güneş, suda yansıma ---
+YY, XX = np.mgrid[0:H, 0:W].astype(np.float32)
+glow = np.exp(-(((XX - 1560) / 560) ** 2 + ((YY - 250) / 240) ** 2))[..., None]
+canvas = 1 - (1 - canvas) * (1 - np.array([1.0, 0.55, 0.2]) * 0.42 * glow)
+streak = np.exp(-(((XX - 1500) / 220) ** 2)) * np.clip((YY - 470) / 60, 0, 1) * np.exp(-((YY - 520) / 160) ** 2)
+canvas = 1 - (1 - canvas) * (1 - np.array([1.0, 0.62, 0.3]) * 0.28 * streak[..., None])
 
 Image.fromarray((np.clip(canvas, 0, 1) * 255).astype(np.uint8)).save(out)
-print(out, f"(fotoğraf {photo.width}x{photo.height}, üst kenar y={top})")
+print(out, f"keskin fotoğraf {w}x{h} @ ({sx},{sy})")

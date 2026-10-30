@@ -28,9 +28,10 @@ Tablolar: `Kisiler` (42 kişi, 5 bölge), `Challenge` (393 sahte giriş, 1–27 
 Power BI görsellerin arkasını bulanıklaştıramaz. Bu yüzden gemi fotoğrafı, buzlu cam paneller, ikonlar ve sabit başlıklar tek bir **sayfa arka plan resmine** (`TEU_Panel_Arkaplan.png`) gömüldü. Veriye bağlı her şey (sayılar, grafikler, gösterge, dilimleyiciler) bu resmin üstünde arka planı şeffaf Power BI görselleridir.
 
 **Fotoğrafı değiştirmek için:**
-1. `python3 dashboard/mockup/grade_photo.py <yeni-fotoğraf>`: fotoğrafı tasarımın ışığına göre renklendirir ve 1920×1080 tuvale yerleştirir (`teu-gemi-arkaplan.png`). Geminin konumu betiğin başındaki `SHIP_BOTTOM_SRC` / `SHIP_BOTTOM_DST` ayarlarıyla değişir.
-2. `dashboard/mockup/teu-glass.html?photo=teu-gemi-arkaplan.png&bg` sayfasının 1920×1080 ekran görüntüsünü `teu-panel-arkaplan.png` olarak alın.
-3. `python3 dashboard/pbip/build_pbip.py` ile projeyi yeniden üretin.
+1. Fotoğraf küçükse (1000 px'ten dar) önce `dashboard/mockup/upscale_photo.py` ile yapay zekâyla 4 kat büyütün.
+2. `python3 dashboard/mockup/grade_photo.py <fotoğraf>`: fotoğrafı keskin kalacağı boyutta üst-ortaya yerleştirir, kenarlarını aynı fotoğrafın bulanık koyu kopyasına karıştırır ve tasarımın ışığına göre renklendirir (`teu-gemi-arkaplan.png`). Geminin konumu ve boyutu betiğin başındaki ayarlarla değişir.
+3. `dashboard/mockup/teu-glass.html?photo=teu-gemi-arkaplan.png&bg` sayfasının 1920×1080 ekran görüntüsünü `teu-panel-arkaplan.png` olarak alın.
+4. `python3 dashboard/pbip/build_pbip.py` ile projeyi yeniden üretin.
 
 Bunun yerine hazır bir resmi Power BI'da da koyabilirsiniz: Panel sayfasında boş bir yere tıklayın, **Biçim → Kanvas arka planı → Resim** ile seçin, **Görüntü sığdırma: Sığdır** yapın. Paneller resmin içinde olduğu için yalnızca fotoğraf koyarsanız kartlar okunaksız kalır. Bu durumda `dashboard/mockup/teu-panel-katmani.png` (şeffaf panel katmanı) dosyasını bir Görüntü görseli olarak sayfanın en altına ekleyin.
 
