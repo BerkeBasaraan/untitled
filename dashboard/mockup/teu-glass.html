@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>TEU Glass Paneli</title>
+<style>
+  :root {
+    --accent: #FF7A2F;
+    --accent-2: #F6B73C;
+    --glass: rgba(24, 22, 20, 0.52);
+    --glass-strong: rgba(24, 22, 20, 0.68);
+    --line: rgba(255, 255, 255, 0.12);
+    --text: #F5F2EE;
+    --text-2: rgba(245, 242, 238, 0.66);
+    --text-3: rgba(245, 242, 238, 0.42);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    width: 1920px; height: 1080px; overflow: hidden; position: relative;
+    background: #0B0A09; color: var(--text); font-family: Inter, "Segoe UI", sans-serif;
+  }
+  #scene { position: absolute; inset: 0; }
+  .shade {
+    position: absolute; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(120% 80% at 50% 30%, transparent 40%, rgba(0,0,0,.55) 100%),
+      linear-gradient(180deg, rgba(0,0,0,.45) 0%, transparent 22%, transparent 42%, rgba(0,0,0,.72) 62%, rgba(0,0,0,.9) 100%);
+  }
+  .glass {
+    position: absolute; background: var(--glass); border: 1px solid var(--line); border-radius: 28px;
+    backdrop-filter: blur(22px) saturate(120%); -webkit-backdrop-filter: blur(22px) saturate(120%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 20px 50px rgba(0,0,0,.35);
+  }
+  .pill {
+    position: absolute; height: 52px; border-radius: 26px; display: flex; align-items: center; gap: 10px;
+    padding: 0 22px; font-size: 15px; font-weight: 500; background: rgba(20,18,16,.55);
+    border: 1px solid var(--line); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  }
+  .circle { width: 52px; padding: 0; justify-content: center; }
+  .pill svg, .nav svg, .ico svg { stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* Sol menü */
+  .brand { position: absolute; left: 40px; top: 36px; display: flex; gap: 14px; align-items: center; }
+  .logo { width: 60px; height: 60px; border-radius: 50%; background: var(--accent); display: grid; place-items: center; }
+  .brand b { font-size: 18px; display: block; }
+  .brand span { font-size: 13px; color: var(--text-3); }
+  .nav {
+    position: absolute; left: 40px; width: 60px; height: 60px; border-radius: 50%; display: grid; place-items: center;
+    border: 1px solid var(--line); background: rgba(20,18,16,.45); color: var(--text-2);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  }
+  .nav.on { background: #fff; color: #111; border-color: #fff; }
+
+  /* Başlık */
+  .hello { position: absolute; left: 0; right: 0; top: 52px; text-align: center; font-size: 28px; font-weight: 600; }
+  .ask { position: absolute; left: 0; right: 0; top: 98px; text-align: center; font-size: 50px; font-weight: 300; color: rgba(245,242,238,.78); letter-spacing: -.01em; }
+  .ask i { font-style: normal; display: inline-block; width: 3px; height: 52px; background: var(--text); vertical-align: -8px; margin-right: 6px; }
+  .user { position: absolute; right: 40px; top: 36px; display: flex; align-items: center; gap: 14px; }
+  .avatar { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #3A5A78, #1F2F3F); display: grid; place-items: center; font-weight: 700; font-size: 18px; border: 2px solid rgba(255,255,255,.25); }
+  .user b { font-size: 17px; display: block; }
+  .user span { font-size: 13px; color: var(--text-3); }
+
+  /* Kartlar */
+  .card-head { position: absolute; left: 24px; top: 22px; display: flex; align-items: center; gap: 14px; font-size: 21px; font-weight: 600; }
+  .ico { width: 52px; height: 52px; border-radius: 15px; display: grid; place-items: center; background: linear-gradient(160deg, rgba(255,255,255,.22), rgba(255,255,255,.04)); border: 1px solid rgba(255,255,255,.14); }
+  .period { position: absolute; right: 24px; top: 26px; font-size: 13px; color: var(--text-3); }
+  .big { position: absolute; left: 24px; font-size: 44px; font-weight: 600; letter-spacing: -.02em; }
+  .big small { font-size: 22px; font-weight: 500; margin-left: 2px; }
+  .note { position: absolute; left: 24px; font-size: 13px; color: var(--text-2); display: flex; gap: 6px; align-items: center; }
+  .up { color: #7BD88F; font-weight: 600; }
+  .center { position: absolute; left: 0; right: 0; text-align: center; }
+  .score { font-size: 40px; font-weight: 600; color: var(--accent); }
+  .stat { position: absolute; bottom: 22px; font-size: 13px; color: var(--text-3); }
+  .stat b { display: block; font-size: 22px; color: var(--text); font-weight: 500; margin-top: 6px; }
+  svg text { font-family: Inter, sans-serif; }
+</style>
+</head>
+<body>
+<svg id="scene" width="1920" height="1080" viewBox="0 0 1920 1080"></svg>
+<div class="shade"></div>
+
+<!-- Marka + menü -->
+<div class="brand">
+  <div class="logo"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15h18l-2 5H5z"/><path d="M6 15V9h5v6M11 11h6v4"/></svg></div>
+  <div><b>TEU Challenge</b><span>Satış paneli</span></div>
+</div>
+<div class="nav on" style="top:132px"><svg width="22" height="22" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg></div>
+<div class="nav" style="top:208px"><svg width="22" height="22" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM17 6h3a3 3 0 0 1-3 4M7 6H4a3 3 0 0 0 3 4"/></svg></div>
+<div class="nav" style="top:284px"><svg width="22" height="22" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div>
+<div class="nav" style="top:360px"><svg width="22" height="22" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 11h6M9 15h4"/></svg></div>
+
+<!-- Başlık -->
+<div class="hello">Merhaba Can, bugün 3. sıradasın 🚢</div>
+<div class="ask"><i></i>Bana sor: 2. sıraya ne kadar kaldı?</div>
+<div class="user">
+  <div class="pill circle" style="position:relative"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+  <div class="avatar">CD</div>
+  <div><b>Can Demir</b><span>Satış · Marmara</span></div>
+</div>
+
+<!-- Araç çubuğu -->
+<div class="pill circle" style="left:950px;top:448px"><svg width="20" height="20" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></div>
+<div class="pill circle" style="left:1014px;top:448px;background:rgba(255,122,47,.25);border-color:rgba(255,122,47,.5)"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/></svg></div>
+<div class="pill" style="left:1078px;top:448px"><svg width="18" height="18" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>1 – 27 Ekim 2026<svg width="16" height="16" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></div>
+<div class="pill" style="left:1336px;top:448px"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>TEU Ekle</div>
+<div class="pill" style="left:1484px;top:448px">Bölgeler</div>
+<div class="pill" style="left:1620px;top:448px;background:var(--accent);border-color:var(--accent);color:#1A0F08;font-weight:600">Rapor Oluştur</div>
+
+<!-- Satır 1 -->
+<div class="glass" style="left:40px;top:520px;width:464px;height:260px">
+  <div class="card-head"><div class="ico"><svg width="26" height="26" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="11" rx="1"/><path d="M6 7v11M10 7v11M14 7v11M18 7v11"/></svg></div>Senin TEU'n</div>
+  <div class="period">Son 7 gün</div>
+  <div class="big" style="top:156px">186<small> TEU</small></div>
+  <div class="note" style="top:216px">Hedef 250 · %74 tamamlandı</div>
+  <svg id="types" width="250" height="140" style="position:absolute;right:22px;top:92px"></svg>
+</div>
+
+<div class="glass" style="left:524px;top:520px;width:464px;height:260px">
+  <div class="card-head"><div class="ico"><svg width="26" height="26" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM17 6h3a3 3 0 0 1-3 4M7 6H4a3 3 0 0 0 3 4"/></svg></div>Sıran</div>
+  <div class="period">Son 7 gün</div>
+  <div class="big" style="top:156px">3.<small> / 42</small></div>
+  <div class="note" style="top:216px"><span class="up">▲ 1</span> dünden bu yana (4. → 3.)</div>
+  <svg id="race" width="250" height="150" style="position:absolute;right:22px;top:88px"></svg>
+</div>
+
+<div class="glass" style="left:1008px;top:520px;width:464px;height:260px">
+  <div class="card-head"><div class="ico"><svg width="26" height="26" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>Bugün</div>
+  <div class="period">Bu hafta</div>
+  <div class="big" style="top:156px">+16<small> TEU</small></div>
+  <div class="note" style="top:216px">Şirket geneli +45 TEU · 9 giriş</div>
+  <svg id="week" width="230" height="150" style="position:absolute;right:22px;top:88px"></svg>
+</div>
+
+<!-- Satır 2 -->
+<div class="glass" style="left:40px;top:800px;width:706px;height:240px">
+  <div class="card-head" style="font-size:16px;font-weight:500">Hedefe kalan</div>
+  <div class="center" style="top:26px"><div class="score">64 TEU</div><div style="font-size:16px;font-weight:600;margin-top:2px">2. sıraya 14 TEU</div><div style="font-size:14px;color:var(--text-2);margin-top:4px">+18 TEU geçen haftaya göre</div></div>
+  <svg id="waves" width="706" height="56" style="position:absolute;left:0;top:112px"></svg>
+  <div class="stat" style="left:24px">Günlük ortalama<b>9,3 TEU</b></div>
+  <div class="stat" style="left:0;right:0;text-align:center"><svg width="22" height="22" viewBox="0 0 24 24" style="stroke:var(--text-2);fill:none;stroke-width:1.8"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 16v-4M12 16V8M16 16v-6"/></svg><span style="display:block;margin-top:2px">Detay</span></div>
+  <div class="stat" style="right:24px;text-align:right">Gereken tempo<b>21,3 TEU/gün</b></div>
+</div>
+
+<div class="glass" style="left:766px;top:800px;width:706px;height:240px">
+  <div class="card-head" style="font-size:16px;font-weight:500">Şirket yarışı</div>
+  <div class="center" style="top:26px"><div class="score">3.308</div><div style="font-size:16px;font-weight:600;margin-top:2px">Ekim toplamı TEU</div><div style="font-size:14px;color:var(--text-2);margin-top:4px">42 kişi · 393 giriş</div></div>
+  <svg id="pulse" width="706" height="56" style="position:absolute;left:0;top:112px"></svg>
+  <div class="stat" style="left:24px">Lider<b>Ayşe Kaya · 240</b></div>
+  <div class="stat" style="left:0;right:0;text-align:center"><svg width="22" height="22" viewBox="0 0 24 24" style="stroke:var(--text-2);fill:none;stroke-width:1.8"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 16v-4M12 16V8M16 16v-6"/></svg><span style="display:block;margin-top:2px">Liderlik</span></div>
+  <div class="stat" style="right:24px;text-align:right">Lider bölge<b>Marmara · 1.028</b></div>
+</div>
+
+<!-- Sağ uzun kart -->
+<div class="glass" style="left:1492px;top:520px;width:388px;height:520px;background:var(--glass-strong)">
+  <svg id="chips" width="388" height="90" style="position:absolute;left:0;top:16px"></svg>
+  <svg id="gauge" width="388" height="300" style="position:absolute;left:0;top:110px"></svg>
+  <div class="center" style="bottom:56px;font-size:19px;font-weight:600">Kişisel hedef ilerlemesi</div>
+  <div class="center" style="bottom:30px;font-size:13px;color:var(--text-3)">Marmara'da 2. sıradasın · 3 iş günü kaldı</div>
+</div>
+
+<script>
+const NS = "http://www.w3.org/2000/svg";
+function el(tag, a, p, t) { const e = document.createElementNS(NS, tag); for (const k in a) e.setAttribute(k, a[k]); if (t != null) e.textContent = t; p.appendChild(e); return e; }
+let seed = 11; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const ACC = "#FF7A2F", ACC2 = "#F6B73C";
+
+/* ---------- Arka plan: alacakaranlıkta konteyner gemisi ---------- */
+(() => {
+  const s = document.getElementById("scene");
+  const defs = el("defs", {}, s);
+  const sky = el("linearGradient", { id: "sky", x1: 0, y1: 0, x2: 0, y2: 1 }, defs);
+  [["0", "#07090C"], [".45", "#1C1712"], [".72", "#5A2E14"], ["1", "#C2601F"]].forEach(([o, c]) => el("stop", { offset: o, "stop-color": c }, sky));
+  const sea = el("linearGradient", { id: "sea", x1: 0, y1: 0, x2: 0, y2: 1 }, defs);
+  [["0", "#3B2112"], [".25", "#140F0C"], ["1", "#050506"]].forEach(([o, c]) => el("stop", { offset: o, "stop-color": c }, sea));
+  const sun = el("radialGradient", { id: "sun", cx: .5, cy: .5, r: .5 }, defs);
+  [["0", "rgba(255,170,90,.95)"], [".25", "rgba(255,120,40,.45)"], ["1", "rgba(255,90,20,0)"]].forEach(([o, c]) => el("stop", { offset: o, "stop-color": c }, sun));
+  const hull = el("linearGradient", { id: "hull", x1: 0, y1: 0, x2: 0, y2: 1 }, defs);
+  [["0", "#24282C"], ["1", "#0D0F11"]].forEach(([o, c]) => el("stop", { offset: o, "stop-color": c }, hull));
+  const grain = el("filter", { id: "grain" }, defs);
+  el("feTurbulence", { type: "fractalNoise", baseFrequency: ".9", numOctaves: 2, seed: 3 }, grain);
+  el("feColorMatrix", { values: "0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .07 0" }, grain);
+  const soft = el("filter", { id: "soft" }, defs); el("feGaussianBlur", { stdDeviation: 1.1 }, soft);
+
+  const H = 470; // ufuk
+  el("rect", { width: 1920, height: H, fill: "url(#sky)" }, s);
+  el("ellipse", { cx: 1480, cy: H - 6, rx: 520, ry: 200, fill: "url(#sun)" }, s);
+  el("circle", { cx: 1480, cy: H - 18, r: 34, fill: "#FFC27A", opacity: .9 }, s);
+  // uzak kıyı ve şehir ışıkları
+  let d = `M0,${H}`; for (let x = 0; x <= 1920; x += 40) d += ` L${x},${H - 10 - rnd() * 18 - (x > 1600 ? 14 : 0)}`; d += ` L1920,${H} Z`;
+  el("path", { d, fill: "#140E0A" }, s);
+  for (let i = 0; i < 70; i++) el("circle", { cx: rnd() * 1920, cy: H - 4 - rnd() * 14, r: .9 + rnd(), fill: rnd() < .6 ? "#FFB066" : "#FFE2B0", opacity: .5 + rnd() * .5 }, s);
+  el("rect", { y: H, width: 1920, height: 1080 - H, fill: "url(#sea)" }, s);
+  // güneş yansıması
+  for (let i = 0; i < 46; i++) {
+    const y = H + 6 + i * 9 + rnd() * 4, w = 260 - i * 4 + rnd() * 80;
+    el("rect", { x: 1480 - w / 2 + (rnd() - .5) * 60, y, width: w, height: 2, rx: 1, fill: "#FF9A4A", opacity: Math.max(0, .55 - i * .012) }, s);
+  }
+
+  // Liman vinçleri (sağ)
+  const crane = (x, h, flip) => {
+    const g = el("g", { fill: "none", stroke: "#0E0B09", "stroke-width": 7, transform: flip ? `translate(${2 * x},0) scale(-1,1)` : "" }, s);
+    el("path", { d: `M${x},${H} L${x},${H - h} M${x + 70},${H} L${x + 70},${H - h} M${x},${H - h * .55} L${x + 70},${H - h * .55} M${x},${H - h * .55} L${x + 70},${H - h * .2} M${x - 260},${H - h} L${x + 160},${H - h} M${x + 35},${H - h - 90} L${x - 230},${H - h} M${x + 35},${H - h - 90} L${x + 150},${H - h} M${x + 35},${H - h - 90} L${x + 35},${H - h}` }, g);
+    el("circle", { cx: x + 35, cy: H - h - 94, r: 4, fill: "#FF3B2F", stroke: "none" }, s);
+  };
+  crane(1720, 210); crane(1860, 190);
+
+  // Gemi
+  const sx = 170, ex = 1650, deck = 372, keel = 474;
+  const g = el("g", {}, s);
+  // konteyner istifleri
+  const palette = ["#7A2E1F", "#2F4C5E", "#5C6166", "#8C5A1E", "#2B5A4A", "#3E3A5C", "#A6461F", "#6B2428", "#1F3D63", "#857A63"];
+  let x = sx + 120;
+  while (x < ex - 290) {
+    const tiers = 5 + Math.floor(rnd() * 4), bw = 58;
+    for (let row = 0; row < 3; row++) {
+      for (let t = 0; t < tiers - (row === 2 ? Math.floor(rnd() * 3) : 0); t++) {
+        const y = deck - (t + 1) * 17;
+        const c = palette[Math.floor(rnd() * palette.length)];
+        el("rect", { x: x + row * 0.5, y, width: bw - 2, height: 16, fill: c }, g);
+        for (let k = 1; k < 6; k++) el("line", { x1: x + k * (bw / 6), x2: x + k * (bw / 6), y1: y + 2, y2: y + 14, stroke: "rgba(0,0,0,.28)", "stroke-width": 1 }, g);
+        el("rect", { x, y: y + 15, width: bw - 2, height: 1, fill: "rgba(0,0,0,.35)" }, g);
+      }
+      x += bw;
+    }
+    x += 10; // bölme arası
+  }
+  // köprü üstü (kıçta)
+  const bx = ex - 270;
+  el("rect", { x: bx, y: deck - 150, width: 120, height: 150, fill: "#D9D4CB" }, g);
+  el("rect", { x: bx - 18, y: deck - 158, width: 156, height: 14, fill: "#E8E3DA" }, g);
+  for (let r = 0; r < 6; r++) for (let c = 0; c < 6; c++) el("rect", { x: bx + 10 + c * 18, y: deck - 136 + r * 22, width: 10, height: 6, fill: rnd() < .35 ? "#FFCB80" : "#3B3A38" }, g);
+  el("rect", { x: bx + 52, y: deck - 200, width: 22, height: 44, fill: "#1E1E1E" }, g);
+  el("rect", { x: bx + 52, y: deck - 200, width: 22, height: 10, fill: "#C2401F" }, g);
+  el("line", { x1: bx + 30, x2: bx + 30, y1: deck - 158, y2: deck - 214, stroke: "#CFC8BC", "stroke-width": 3 }, g);
+  // gövde
+  el("path", { d: `M${sx},${deck} L${ex},${deck} L${ex + 40},${deck + 10} L${ex + 20},${keel} L${sx + 120},${keel} Q${sx + 20},${keel - 10} ${sx - 40},${deck - 8} Z`, fill: "url(#hull)" }, g);
+  el("path", { d: `M${sx + 120},${keel - 18} L${ex + 24},${keel - 18} L${ex + 20},${keel} L${sx + 120},${keel} Q${sx + 60},${keel - 4} ${sx + 40},${keel - 18} Z`, fill: "#6E1E18" }, g);
+  el("path", { d: `M${sx - 40},${deck - 8} L${ex + 40},${deck + 10}`, stroke: "#E6E0D6", "stroke-width": 2, opacity: .35 }, g);
+  el("text", { x: sx + 240, y: deck + 50, fill: "#D8D2C8", "font-size": 30, "font-weight": 700, "letter-spacing": 14, opacity: .7 }, g, "TEU CHALLENGE");
+  // geminin su yansıması
+  el("rect", { x: sx + 80, y: keel + 2, width: ex - sx - 40, height: 46, fill: "#000", opacity: .45, filter: "url(#soft)" }, s);
+  for (let i = 0; i < 18; i++) el("rect", { x: sx + 100 + rnd() * (ex - sx - 200), y: keel + 4 + rnd() * 50, width: 30 + rnd() * 80, height: 1.5, fill: "#FF9A4A", opacity: .25 }, s);
+  // pruva köpüğü
+  el("path", { d: `M${sx - 50},${keel - 6} q60,14 160,8`, stroke: "#E9E2D6", "stroke-width": 3, fill: "none", opacity: .5 }, s);
+  // gren
+  el("rect", { width: 1920, height: 1080, filter: "url(#grain)" }, s);
+})();
+
+/* ---------- Kart 1: konteyner tipine göre girişler ---------- */
+(() => {
+  const s = document.getElementById("types");
+  const rows = [["20' DC", [0.4, 1.3, 2.2, 3.1, 4.6, 5.8]], ["40' HC", [0.2, 1.1, 1.9, 2.7, 3.4, 4.2, 5.1, 6.0]], ["Reefer", [1.6, 3.8, 5.4]]];
+  rows.forEach(([n, xs], i) => {
+    const y = 18 + i * 34;
+    el("text", { x: 58, y: y + 5, "text-anchor": "end", "font-size": 12, fill: "rgba(245,242,238,.66)" }, s, n);
+    xs.forEach(v => el("rect", { x: 70 + v * 26, y: y - 9, width: v % 1 > .5 ? 14 : 8, height: 18, rx: 4, fill: ACC, opacity: .7 + (v % 1) * .3 }, s));
+  });
+  ["Pzt", "Çar", "Cum", "Pzr"].forEach((d, i) => el("text", { x: 76 + i * 52, y: 134, "font-size": 11, fill: "rgba(245,242,238,.42)" }, s, d));
+})();
+
+/* ---------- Kart 2: sen vs önündeki (kümülatif) ---------- */
+(() => {
+  const s = document.getElementById("race");
+  const L = 28, W = 250, top = 10, bot = 118, max = 210, min = 140;
+  const sy = v => bot - (v - min) / (max - min) * (bot - top);
+  [140, 170, 200].forEach(v => {
+    el("text", { x: L - 8, y: sy(v) + 4, "text-anchor": "end", "font-size": 11, fill: "rgba(245,242,238,.42)" }, s, v);
+  });
+  const draw = (pts, c) => {
+    let d = "", step = (W - L - 10) / (pts.length - 1);
+    pts.forEach((v, i) => { const x = L + i * step, y = sy(v); d += i ? ` C${x - step / 2},${sy(pts[i - 1])} ${x - step / 2},${y} ${x},${y}` : `M${x},${y}`; });
+    el("path", { d, fill: "none", stroke: c, "stroke-width": 2.5, "stroke-linecap": "round" }, s);
+    el("circle", { cx: W - 10, cy: sy(pts[pts.length - 1]), r: 4, fill: c }, s);
+  };
+  draw([168, 176, 182, 186, 188, 196, 200], "rgba(245,242,238,.55)");
+  draw([146, 150, 152, 158, 166, 170, 186], ACC);
+  el("text", { x: W - 16, y: sy(200) - 10, "text-anchor": "end", "font-size": 11, fill: "rgba(245,242,238,.66)" }, s, "Mehmet · 200");
+  el("text", { x: W - 16, y: sy(186) + 20, "text-anchor": "end", "font-size": 11, fill: ACC, "font-weight": 600 }, s, "Sen · 186");
+  ["21", "23", "25", "27"].forEach((d, i) => el("text", { x: L + i * 70, y: 140, "font-size": 11, fill: "rgba(245,242,238,.42)" }, s, d + " Eki"));
+})();
+
+/* ---------- Kart 3: haftalık günlük TEU (bloklu sütunlar) ---------- */
+(() => {
+  const s = document.getElementById("week");
+  // Bu hafta: Pzt 26 Ekim 6 TEU, Sal 27 Ekim 16 TEU (bugün); kalan günler boş
+  const vals = [["P", 6], ["S", 16, true], ["Ç"], ["P"], ["C"], ["C"], ["P"]];
+  vals.forEach(([d, v, today], i) => {
+    const x = 6 + i * 32, bh = 13, gap = 3;
+    for (let k = 0; k < 7; k++) {
+      const y = 112 - (k + 1) * (bh + gap);
+      const filled = v != null && k < Math.ceil(v / 3);
+      el("rect", { x, y, width: 24, height: bh, rx: 3, fill: filled ? (today ? ACC2 : "rgba(246,183,60,.55)") : "rgba(255,255,255,.06)", stroke: filled ? "none" : "rgba(255,255,255,.08)" }, s);
+    }
+    el("text", { x: x + 12, y: 136, "text-anchor": "middle", "font-size": 11, fill: today ? "#fff" : "rgba(245,242,238,.42)", "font-weight": today ? 700 : 400 }, s, d);
+  });
+})();
+
+/* ---------- Satır 2: dalgalar ve nabız ---------- */
+(() => {
+  const s = document.getElementById("waves");
+  const wave = (amp, f, ph, c, o) => {
+    let d = ""; for (let x = 24; x <= 682; x += 4) { const y = 28 + Math.sin(x / 682 * Math.PI * f + ph) * amp * Math.sin((x - 24) / 658 * Math.PI); d += (x === 24 ? "M" : " L") + x + "," + y.toFixed(1); }
+    el("path", { d, fill: "none", stroke: c, "stroke-width": 2, opacity: o }, s);
+  };
+  wave(20, 3, 0, ACC, .9); wave(16, 3.4, 1.8, ACC2, .7); wave(13, 2.6, 3.4, "rgba(245,242,238,.6)", .6);
+})();
+(() => {
+  const s = document.getElementById("pulse");
+  const n = 120;
+  for (let i = 0; i < n; i++) {
+    const x = 28 + i * (650 / n), mid = Math.abs(i - n / 2) < 2;
+    const h = mid ? 52 : 8 + rnd() * 28 * (0.5 + 0.5 * Math.sin(i / n * Math.PI));
+    el("rect", { x, y: 28 - h / 2, width: 2, height: h, rx: 1, fill: mid ? ACC : "rgba(245,242,238,.32)" }, s);
+  }
+})();
+
+/* ---------- Sağ kart: bölge çipleri + gösterge ---------- */
+(() => {
+  const s = document.getElementById("chips");
+  const chips = [["E", 26], ["A", 30], ["M", 40, true], ["İ", 30], ["K", 26]];
+  let x = 18;
+  chips.forEach(([t, r, on], i) => {
+    const cx = x + r;
+    el("circle", { cx, cy: 46, r, fill: on ? "rgba(255,122,47,.22)" : "rgba(255,255,255,.08)", stroke: on ? ACC : "rgba(255,255,255,.18)", "stroke-width": on ? 2 : 1 }, s);
+    el("text", { x: cx, y: 46 + (on ? 7 : 5), "text-anchor": "middle", "font-size": on ? 20 : 15, "font-weight": 600, fill: on ? "#fff" : "rgba(245,242,238,.66)" }, s, t);
+    x = cx + r + 12;
+  });
+})();
+(() => {
+  const s = document.getElementById("gauge");
+  const cx = 194, cy = 200, R = 150, pct = 0.744;
+  const N = 54;
+  for (let i = 0; i <= N; i++) {
+    const a = Math.PI + (i / N) * Math.PI, on = i / N <= pct, long = i % 9 === 0;
+    const r1 = R - (long ? 30 : 22), r2 = R;
+    el("line", { x1: cx + Math.cos(a) * r1, y1: cy + Math.sin(a) * r1, x2: cx + Math.cos(a) * r2, y2: cy + Math.sin(a) * r2, stroke: on ? (i / N > pct - 0.06 ? ACC : "rgba(255,255,255,.92)") : "rgba(255,255,255,.22)", "stroke-width": long ? 4 : 3, "stroke-linecap": "round" }, s);
+  }
+  // ibre: yayın hemen içinde kısa bir işaretçi
+  const a = Math.PI + pct * Math.PI, pt = r => [cx + Math.cos(a) * r, cy + Math.sin(a) * r];
+  const [tx, ty] = pt(R - 38), [bx, by] = pt(R - 66), nx = -Math.sin(a) * 7, ny = Math.cos(a) * 7;
+  el("path", { d: `M${tx},${ty} L${bx + nx},${by + ny} L${bx - nx},${by - ny} Z`, fill: ACC }, s);
+  el("text", { x: cx, y: 28, "text-anchor": "middle", "font-size": 13, fill: "rgba(245,242,238,.66)" }, s, "Hedef 250 TEU");
+  el("text", { x: cx, y: cy - 10, "text-anchor": "middle", "font-size": 54, "font-weight": 600, fill: "#F5F2EE" }, s, "%74");
+  el("text", { x: cx, y: cy + 26, "text-anchor": "middle", "font-size": 14, fill: "rgba(245,242,238,.66)" }, s, "186 / 250 TEU");
+  let d1 = "", d2 = "";
+  for (let x = 70; x <= 318; x += 3) {
+    const k = Math.sin((x - 70) / 248 * Math.PI);
+    d1 += (x === 70 ? "M" : " L") + x + "," + (cy + 66 + Math.sin(x / 18) * 12 * k).toFixed(1);
+    d2 += (x === 70 ? "M" : " L") + x + "," + (cy + 66 + Math.sin(x / 14 + 2) * 9 * k).toFixed(1);
+  }
+  el("path", { d: d1, fill: "none", stroke: ACC, "stroke-width": 2 }, s);
+  el("path", { d: d2, fill: "none", stroke: "rgba(245,242,238,.5)", "stroke-width": 2 }, s);
+})();
+</script>
+</body>
+</html>
