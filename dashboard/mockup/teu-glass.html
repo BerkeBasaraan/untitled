@@ -352,6 +352,21 @@ const ACC = "#FF7A2F", ACC2 = "#F6B73C";
   el("path", { d: d2, fill: "none", stroke: "rgba(245,242,238,.5)", "stroke-width": 2 }, s);
 })();
 /* ---------- ?bg: Power BI sayfa arka planı (sadece sabit öğeler) ---------- */
+// ?layer: gemi sahnesi olmadan, şeffaf panel katmanı (Power BI'da fotoğrafın üstüne konur; bulanıklık yok)
+// ?photo=<yol>: çizim sahne yerine verilen fotoğraf kullanılır
+const params = new URLSearchParams(location.search);
+if (params.has("photo")) {
+  const img = document.createElement("img");
+  img.src = params.get("photo");
+  img.style.cssText = "position:absolute;inset:0;width:1920px;height:1080px;object-fit:cover";
+  document.getElementById("scene").replaceWith(img);
+}
+if (params.has("layer")) {
+  document.getElementById("scene").style.display = "none";
+  document.body.style.background = "transparent";
+  document.documentElement.style.setProperty("--glass", "rgba(16, 14, 12, 0.62)");
+  document.documentElement.style.setProperty("--glass-strong", "rgba(16, 14, 12, 0.72)");
+}
 if (location.search.includes("bg")) {
   const hide = e => (e.style.visibility = "hidden");
   document.querySelectorAll(".hello, .big, .note, #types, #race, #week, #pulse, #chips, #gauge, .stat b, .avatar, .user > div:last-child").forEach(hide);

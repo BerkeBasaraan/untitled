@@ -2,15 +2,15 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
   "name": "1e604427aa3d235cd8a8",
   "position": {
-    "x": 748,
-    "y": 596,
-    "z": 410,
-    "height": 172,
-    "width": 228,
-    "tabOrder": 410
+    "x": 256,
+    "y": 600,
+    "z": 400,
+    "height": 168,
+    "width": 236,
+    "tabOrder": 400
   },
   "visual": {
-    "visualType": "lineChart",
+    "visualType": "clusteredBarChart",
     "query": {
       "queryState": {
         "Category": {
@@ -20,15 +20,15 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Tarih"
+                      "Entity": "Challenge"
                     }
                   },
-                  "Property": "GunEtiket"
+                  "Property": "KonteynerTipi"
                 }
               },
-              "queryRef": "Tarih.GunEtiket",
-              "nativeQueryRef": "GunEtiket",
-              "displayName": "Gün"
+              "queryRef": "Challenge.KonteynerTipi",
+              "nativeQueryRef": "KonteynerTipi",
+              "displayName": "Konteyner tipi"
             }
           ]
         },
@@ -42,30 +42,32 @@
                       "Entity": "_Olculer"
                     }
                   },
-                  "Property": "Son 7 Gün Sen"
+                  "Property": "Benim TEU"
                 }
               },
-              "queryRef": "_Olculer.Son 7 Gün Sen",
-              "nativeQueryRef": "Son 7 Gün Sen",
-              "displayName": "Sen"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Olculer"
-                    }
-                  },
-                  "Property": "Son 7 Gün Öndeki"
-                }
-              },
-              "queryRef": "_Olculer.Son 7 Gün Öndeki",
-              "nativeQueryRef": "Son 7 Gün Öndeki",
-              "displayName": "Bir öndeki"
+              "queryRef": "_Olculer.Benim TEU",
+              "nativeQueryRef": "Benim TEU",
+              "displayName": "TEU"
             }
           ]
         }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "_Olculer"
+                  }
+                },
+                "Property": "Benim TEU"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
       }
     },
     "objects": {
@@ -120,7 +122,7 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             },
@@ -165,38 +167,6 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "position": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Top'"
-                }
-              }
-            },
-            "fontSize": {
-              "expr": {
-                "Literal": {
-                  "Value": "9D"
-                }
-              }
-            },
-            "labelColor": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#B3ADA6'"
-                    }
-                  }
-                }
-              }
-            },
-            "showTitle": {
-              "expr": {
-                "Literal": {
                   "Value": "false"
                 }
               }
@@ -218,44 +188,34 @@
                 }
               }
             }
-          },
-          "selector": {
-            "metadata": "_Olculer.Son 7 Gün Sen"
           }
-        },
+        }
+      ],
+      "labels": [
         {
           "properties": {
-            "fill": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "color": {
               "solid": {
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#B3ADA6'"
+                      "Value": "'#F5F2EE'"
                     }
                   }
                 }
               }
-            }
-          },
-          "selector": {
-            "metadata": "_Olculer.Son 7 Gün Öndeki"
-          }
-        }
-      ],
-      "lineStyles": [
-        {
-          "properties": {
-            "strokeWidth": {
-              "expr": {
-                "Literal": {
-                  "Value": "3D"
-                }
-              }
             },
-            "showMarker": {
+            "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "9D"
                 }
               }
             }

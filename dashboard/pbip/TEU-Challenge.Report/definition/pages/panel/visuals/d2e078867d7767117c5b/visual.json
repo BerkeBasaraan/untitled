@@ -2,89 +2,38 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
   "name": "d2e078867d7767117c5b",
   "position": {
-    "x": 560,
-    "y": 40,
-    "z": 100,
-    "height": 56,
-    "width": 800,
-    "tabOrder": 100
+    "x": 0,
+    "y": 0,
+    "z": 0,
+    "height": 1080,
+    "width": 1920,
+    "tabOrder": 0
   },
   "visual": {
-    "visualType": "card",
-    "query": {
-      "queryState": {
-        "Values": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Olculer"
-                    }
-                  },
-                  "Property": "Selamlama"
-                }
-              },
-              "queryRef": "_Olculer.Selamlama",
-              "nativeQueryRef": "Selamlama"
-            }
-          ]
-        }
-      }
-    },
+    "visualType": "image",
     "objects": {
-      "labels": [
+      "general": [
         {
           "properties": {
-            "fontSize": {
+            "imageUrl": {
               "expr": {
-                "Literal": {
-                  "Value": "20D"
-                }
-              }
-            },
-            "color": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#F5F2EE'"
-                    }
-                  }
-                }
-              }
-            },
-            "fontFamily": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Segoe UI Semibold'"
+                "ResourcePackageItem": {
+                  "PackageName": "RegisteredResources",
+                  "PackageType": 1,
+                  "ItemName": "TEU_Panel_Katmani.png"
                 }
               }
             }
           }
         }
       ],
-      "categoryLabels": [
+      "imageScaling": [
         {
           "properties": {
-            "show": {
+            "imageScalingType": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "wordWrap": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
+                  "Value": "'Fit'"
                 }
               }
             }

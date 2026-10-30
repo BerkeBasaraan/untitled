@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
   "name": "4281506423b0573f5156",
   "position": {
-    "x": 1712,
-    "y": 36,
-    "z": 110,
-    "height": 30,
-    "width": 176,
-    "tabOrder": 110
+    "x": 560,
+    "y": 40,
+    "z": 100,
+    "height": 56,
+    "width": 800,
+    "tabOrder": 100
   },
   "visual": {
     "visualType": "card",
@@ -23,11 +23,11 @@
                       "Entity": "_Olculer"
                     }
                   },
-                  "Property": "Benim Adım"
+                  "Property": "Selamlama"
                 }
               },
-              "queryRef": "_Olculer.Benim Adım",
-              "nativeQueryRef": "Benim Adım"
+              "queryRef": "_Olculer.Selamlama",
+              "nativeQueryRef": "Selamlama"
             }
           ]
         }
@@ -40,7 +40,7 @@
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "13D"
+                  "Value": "20D"
                 }
               }
             },

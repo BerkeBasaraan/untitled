@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
   "name": "03cc2c800adffb296c01",
   "position": {
-    "x": 1220,
+    "x": 778,
     "y": 990,
-    "z": 1270,
+    "z": 1269,
     "height": 40,
     "width": 240,
-    "tabOrder": 1270
+    "tabOrder": 1269
   },
   "visual": {
     "visualType": "card",
@@ -23,11 +23,11 @@
                       "Entity": "_Olculer"
                     }
                   },
-                  "Property": "Lider Bölge Metin"
+                  "Property": "Lider Metin"
                 }
               },
-              "queryRef": "_Olculer.Lider Bölge Metin",
-              "nativeQueryRef": "Lider Bölge Metin"
+              "queryRef": "_Olculer.Lider Metin",
+              "nativeQueryRef": "Lider Metin"
             }
           ]
         }

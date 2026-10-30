@@ -2,18 +2,37 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
   "name": "fd88af0399ace4c6c200",
   "position": {
-    "x": 193,
-    "y": 812,
-    "z": 540,
-    "height": 58,
-    "width": 400,
-    "tabOrder": 540
+    "x": 1240,
+    "y": 596,
+    "z": 420,
+    "height": 172,
+    "width": 220,
+    "tabOrder": 420
   },
   "visual": {
-    "visualType": "card",
+    "visualType": "clusteredColumnChart",
     "query": {
       "queryState": {
-        "Values": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Tarih"
+                    }
+                  },
+                  "Property": "GunEtiket"
+                }
+              },
+              "queryRef": "Tarih.GunEtiket",
+              "nativeQueryRef": "GunEtiket",
+              "displayName": "Gün"
+            }
+          ]
+        },
+        "Y": {
           "projections": [
             {
               "field": {
@@ -23,49 +42,109 @@
                       "Entity": "_Olculer"
                     }
                   },
-                  "Property": "Hedefe Kalan TEU"
+                  "Property": "Son 7 Gün Benim TEU"
                 }
               },
-              "queryRef": "_Olculer.Hedefe Kalan TEU",
-              "nativeQueryRef": "Hedefe Kalan TEU"
+              "queryRef": "_Olculer.Son 7 Gün Benim TEU",
+              "nativeQueryRef": "Son 7 Gün Benim TEU",
+              "displayName": "TEU"
             }
           ]
         }
       }
     },
     "objects": {
-      "labels": [
+      "categoryAxis": [
         {
           "properties": {
-            "fontSize": {
+            "show": {
               "expr": {
                 "Literal": {
-                  "Value": "30D"
+                  "Value": "true"
                 }
               }
             },
-            "color": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "9D"
+                }
+              }
+            },
+            "labelColor": {
               "solid": {
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#FF7A2F'"
+                      "Value": "'#B3ADA6'"
                     }
                   }
                 }
               }
             },
-            "fontFamily": {
+            "showAxisTitle": {
               "expr": {
                 "Literal": {
-                  "Value": "'Segoe UI Semibold'"
+                  "Value": "false"
+                }
+              }
+            },
+            "gridlineShow": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }
           }
         }
       ],
-      "categoryLabels": [
+      "valueAxis": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "9D"
+                }
+              }
+            },
+            "labelColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#B3ADA6'"
+                    }
+                  }
+                }
+              }
+            },
+            "showAxisTitle": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "gridlineShow": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "legend": [
         {
           "properties": {
             "show": {
@@ -78,13 +157,48 @@
           }
         }
       ],
-      "wordWrap": [
+      "dataPoint": [
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#F6B73C'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "labels": [
         {
           "properties": {
             "show": {
               "expr": {
                 "Literal": {
                   "Value": "true"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#F5F2EE'"
+                    }
+                  }
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "9D"
                 }
               }
             }

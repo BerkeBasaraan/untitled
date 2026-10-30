@@ -3,11 +3,11 @@
   "name": "a8bffe4468b2065cee66",
   "position": {
     "x": 919,
-    "y": 892,
-    "z": 1268,
-    "height": 24,
+    "y": 868,
+    "z": 1267,
+    "height": 28,
     "width": 400,
-    "tabOrder": 1268
+    "tabOrder": 1267
   },
   "visual": {
     "visualType": "card",
@@ -23,11 +23,11 @@
                       "Entity": "_Olculer"
                     }
                   },
-                  "Property": "Şirket Alt Metin"
+                  "Property": "Dönem Etiketi"
                 }
               },
-              "queryRef": "_Olculer.Şirket Alt Metin",
-              "nativeQueryRef": "Şirket Alt Metin"
+              "queryRef": "_Olculer.Dönem Etiketi",
+              "nativeQueryRef": "Dönem Etiketi"
             }
           ]
         }
@@ -40,7 +40,7 @@
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "10D"
+                  "Value": "12D"
                 }
               }
             },
@@ -49,7 +49,7 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#B3ADA6'"
+                      "Value": "'#F5F2EE'"
                     }
                   }
                 }
@@ -58,7 +58,7 @@
             "fontFamily": {
               "expr": {
                 "Literal": {
-                  "Value": "'Segoe UI'"
+                  "Value": "'Segoe UI Semibold'"
                 }
               }
             }

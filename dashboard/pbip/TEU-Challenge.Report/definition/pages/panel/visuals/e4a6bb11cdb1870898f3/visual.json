@@ -2,37 +2,18 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
   "name": "e4a6bb11cdb1870898f3",
   "position": {
-    "x": 790,
-    "y": 916,
-    "z": 600,
-    "height": 52,
-    "width": 660,
-    "tabOrder": 600
+    "x": 1220,
+    "y": 990,
+    "z": 1270,
+    "height": 40,
+    "width": 240,
+    "tabOrder": 1270
   },
   "visual": {
-    "visualType": "clusteredColumnChart",
+    "visualType": "card",
     "query": {
       "queryState": {
-        "Category": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Tarih"
-                    }
-                  },
-                  "Property": "GunEtiket"
-                }
-              },
-              "queryRef": "Tarih.GunEtiket",
-              "nativeQueryRef": "GunEtiket",
-              "displayName": "Gün"
-            }
-          ]
-        },
-        "Y": {
+        "Values": {
           "projections": [
             {
               "field": {
@@ -42,95 +23,68 @@
                       "Entity": "_Olculer"
                     }
                   },
-                  "Property": "Toplam TEU"
+                  "Property": "Lider Bölge Metin"
                 }
               },
-              "queryRef": "_Olculer.Toplam TEU",
-              "nativeQueryRef": "Toplam TEU",
-              "displayName": "Günlük TEU"
+              "queryRef": "_Olculer.Lider Bölge Metin",
+              "nativeQueryRef": "Lider Bölge Metin"
             }
           ]
         }
       }
     },
     "objects": {
-      "categoryAxis": [
+      "labels": [
         {
           "properties": {
-            "show": {
+            "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "16D"
                 }
               }
-            }
-          }
-        }
-      ],
-      "valueAxis": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "legend": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "dataPoint": [
-        {
-          "properties": {
-            "fill": {
+            },
+            "color": {
               "solid": {
                 "color": {
                   "expr": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "_Olculer"
-                        }
-                      },
-                      "Property": "Günlük Şirket Rengi"
+                    "Literal": {
+                      "Value": "'#F5F2EE'"
                     }
                   }
                 }
               }
-            }
-          },
-          "selector": {
-            "data": [
-              {
-                "dataViewWildcard": {
-                  "matchingOption": 1
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Segoe UI'"
                 }
               }
-            ]
+            }
           }
         }
       ],
-      "labels": [
+      "categoryLabels": [
         {
           "properties": {
             "show": {
               "expr": {
                 "Literal": {
                   "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "wordWrap": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
                 }
               }
             }

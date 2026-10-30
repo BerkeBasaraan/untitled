@@ -3,11 +3,11 @@
   "name": "5067e7716eeb8b7e0b51",
   "position": {
     "x": 1712,
-    "y": 64,
-    "z": 120,
-    "height": 26,
+    "y": 36,
+    "z": 110,
+    "height": 30,
     "width": 176,
-    "tabOrder": 120
+    "tabOrder": 110
   },
   "visual": {
     "visualType": "card",
@@ -23,11 +23,11 @@
                       "Entity": "_Olculer"
                     }
                   },
-                  "Property": "Benim Rolüm"
+                  "Property": "Benim Adım"
                 }
               },
-              "queryRef": "_Olculer.Benim Rolüm",
-              "nativeQueryRef": "Benim Rolüm"
+              "queryRef": "_Olculer.Benim Adım",
+              "nativeQueryRef": "Benim Adım"
             }
           ]
         }
@@ -40,7 +40,7 @@
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "10D"
+                  "Value": "13D"
                 }
               }
             },
@@ -49,7 +49,7 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#B3ADA6'"
+                      "Value": "'#F5F2EE'"
                     }
                   }
                 }
@@ -58,7 +58,7 @@
             "fontFamily": {
               "expr": {
                 "Literal": {
-                  "Value": "'Segoe UI'"
+                  "Value": "'Segoe UI Semibold'"
                 }
               }
             }

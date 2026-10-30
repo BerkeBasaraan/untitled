@@ -637,22 +637,13 @@ def bar_chart(x, y, w, h, category, value, z, title_obj, fill=None, sort_measure
                   sort=[(sort_measure or value, "Descending")])
 
 
-def page(name, display, visuals, image=None):
+def page(name, display, visuals, color=CANVAS):
     base = REPORT / "definition" / "pages" / name
-    background = props(color=solid(CANVAS), transparency=0)
-    if image:
-        background = props(transparency=0)
-        background[0]["properties"]["image"] = {"image": {
-            "name": lit(image),
-            "url": {"expr": {"ResourcePackageItem": {
-                "PackageName": "RegisteredResources", "PackageType": 1, "ItemName": image}}},
-            "scaling": lit("Fit"),
-        }}
     write(base / "page.json", {
         "$schema": f"{SCHEMA}/item/report/definition/page/2.0.0/schema.json",
         "name": name, "displayName": display, "displayOption": "FitToPage", "height": 1080, "width": 1920,
-        "objects": {"background": background,
-                    "outspace": props(color=solid("#0B0A09" if image else CANVAS), transparency=0)},
+        "objects": {"background": props(color=solid(color), transparency=0),
+                    "outspace": props(color=solid(color), transparency=0)},
     })
     for v in visuals:
         write(base / "visuals" / v["name"] / "visual.json", v)
@@ -770,10 +761,10 @@ detail = visual(24, 104, 1872, 928, "tableEx", {"Values": {"projections": [
 page("detay", "Detay", header("TEU Challenge · Detay", "Tüm TEU girişleri, en yeniden eskiye")
      + [detail, footer(13000)])
 
-# Sayfa 4: Panel (konteyner gemisi arka planlı koyu tasarım)
-# Gemi sahnesi, cam paneller, ikonlar ve sabit yazılar arka plan resminde (dashboard/mockup/teu-glass.html?bg);
-# veriye bağlı her şey arka planı şeffaf Power BI görselleridir.
-PANEL_BG = "TEU_Panel_Arkaplan.png"
+# Sayfa 4: Panel (fotoğraf arka planlı koyu tasarım)
+# Katmanlar: sayfa arka planı (gemi fotoğrafı, kullanıcı ekler) → şeffaf PNG panel katmanı (görüntü görseli;
+# dashboard/mockup/teu-glass.html?bg&layer) → arka planı şeffaf, veriye bağlı Power BI görselleri.
+PANEL_LAYER = "TEU_Panel_Katmani.png"
 
 
 def clear():
@@ -810,6 +801,11 @@ def measure_color(prop, color):
 
 
 panel = [
+    visual(0, 0, 1920, 1080, "image", objects={
+        "general": [{"properties": {"imageUrl": {"expr": {"ResourcePackageItem": {
+            "PackageName": "RegisteredResources", "PackageType": 1, "ItemName": PANEL_LAYER}}}}}],
+        "imageScaling": props(imageScalingType="Fit"),
+    }, container=clear(), z=0),
     text_card(560, 40, 800, 56, "Selamlama", 20, LIGHT, 100, bold=True),
     text_card(1712, 36, 176, 30, "Benim Adım", 13, LIGHT, 110, bold=True),
     text_card(1712, 64, 176, 26, "Benim Rolüm", 10, LIGHT_2, 120),
@@ -877,7 +873,7 @@ panel += [
     text_card(1566, 846, 240, 30, "Hedef İlerleme Metin", 11, LIGHT_2, 730),
     text_card(1504, 990, 364, 36, "Bölge İçi Metin", 10, LIGHT_2, 740),
 ]
-page("panel", "Panel", panel, image=PANEL_BG)
+page("panel", "Panel", panel, color="#0B0A09")
 
 # ---------------------------------------------------------------- Proje dosyaları
 
@@ -934,7 +930,7 @@ write(REPORT / "definition" / "report.json", {
                                         "type": "RegisteredResources"}},
     "resourcePackages": [{"name": "RegisteredResources", "type": "RegisteredResources",
                           "items": [{"name": "TEU_Tema.json", "path": "TEU_Tema.json", "type": "CustomTheme"},
-                                    {"name": PANEL_BG, "path": PANEL_BG, "type": "Image"}]}],
+                                    {"name": PANEL_LAYER, "path": PANEL_LAYER, "type": "Image"}]}],
     "settings": {"useStylableVisualContainerHeader": True, "exportDataMode": "AllowSummarized",
                  "defaultDrillFilterOtherVisuals": True, "allowChangeFilterTypes": True,
                  "useEnhancedTooltips": True},
@@ -944,7 +940,8 @@ write(REPORT / "definition" / "pages" / "pages.json", {
     "pageOrder": ["panel", "liderlik", "bolgeler", "detay"], "activePageName": "panel",
 })
 write(REPORT / "StaticResources" / "RegisteredResources" / "TEU_Tema.json", THEME)
-shutil.copyfile(ROOT.parent / "mockup" / "teu-glass-bg.png", REPORT / "StaticResources" / "RegisteredResources" / PANEL_BG)
+shutil.copyfile(ROOT.parent / "mockup" / "teu-panel-katmani.png",
+                REPORT / "StaticResources" / "RegisteredResources" / PANEL_LAYER)
 write(ROOT / ".gitignore", "**/.pbi/localSettings.json\n**/.pbi/cache.abf")
 
 print(f"{len(people)} kişi, {len(entries)} giriş · Can Demir: {final[3]} TEU, dün {rank(yesterday, 3)}. → bugün "

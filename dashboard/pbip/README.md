@@ -25,9 +25,22 @@ Tablolar: `Kisiler` (42 kişi, 5 bölge), `Challenge` (393 sahte giriş, 1–27 
 
 ## Panel sayfası nasıl kuruldu?
 
-Power BI görsellerin arkasını bulanıklaştıramaz. Bu yüzden gemi sahnesi, cam paneller, ikonlar ve sabit yazılar tek bir **sayfa arka plan resmine** (`TEU_Panel_Arkaplan.png`) gömüldü. Veriye bağlı her şey (sayılar, grafikler, gösterge, dilimleyiciler) bu resmin üstünde arka planı şeffaf Power BI görselleridir.
+Sayfa üç katmandan oluşur:
 
-- Bir başlığı veya ikonu değiştirmek için `dashboard/mockup/teu-glass.html?bg` sayfasını düzenleyip 1920×1080 ekran görüntüsünü yeniden alın, sonra betiği çalıştırın.
+1. **Sayfa arka planı:** gemi fotoğrafı. Dosyada koyu düz renk olarak gelir, fotoğrafı siz eklersiniz (aşağıda).
+2. **Panel katmanı:** sayfanın tamamını kaplayan bir Görüntü görseli (`TEU_Panel_Katmani.png`). Yarı saydam koyu paneller, ikonlar ve sabit başlıklar bu şeffaf PNG'de.
+3. **Veri görselleri:** sayılar, grafikler, gösterge ve dilimleyiciler. Arka planları şeffaf.
+
+**Gemi fotoğrafını eklemek:**
+1. Panel sayfasında tuvalin boş bir yerine tıklayın (hiçbir görsel seçili olmasın).
+2. **Biçim → Kanvas arka planı → Resim → Gözat** ile fotoğrafı seçin.
+3. **Görüntü sığdırma: Doldur**, **Saydamlık: %0** yapın.
+
+En iyi sonucu 1920×1080 veya daha büyük, yatay, üst-orta kısmı sakin bir fotoğraf verir. Paneller fotoğrafın alt yarısını kapatır.
+
+- Power BI görsellerin arkasını bulanıklaştıramaz. Bu yüzden paneller buzlu cam değil, yarı saydam koyudur.
+- Bir başlığı veya ikonu değiştirmek için `dashboard/mockup/teu-glass.html?bg&layer` sayfasını düzenleyip şeffaf arka planlı 1920×1080 ekran görüntüsünü yeniden alın, sonra betiği çalıştırın.
+- Panel katmanını yanlışlıkla seçip taşımamak için Seçim bölmesinde (Görünüm → Seçim) gizleyip açabilir veya en alta sabit tutabilirsiniz.
 - Görselleri taşırsanız arka plandaki cam panellerle hizası bozulur. Görünüm → Kılavuz çizgileri / Izgaraya yasla seçenekleri işe yarar.
 - Sol menü ikonları, "TEU Ekle" ve "Rapor Oluştur" düğmeleri resmin parçasıdır, tıklanmaz. Sayfalar arasında Power BI'ın sayfa sekmeleriyle geçin.
 
