@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
   "name": "3ad4f77f5350f7d42415",
   "position": {
-    "x": 1082,
+    "x": 1489,
     "y": 450,
-    "z": 200,
+    "z": 201,
     "height": 48,
-    "width": 210,
-    "tabOrder": 200
+    "width": 96,
+    "tabOrder": 201
   },
   "visual": {
     "visualType": "slicer",
@@ -20,14 +20,14 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Tarih"
+                      "Entity": "Kisiler"
                     }
                   },
-                  "Property": "Donem"
+                  "Property": "Bolge"
                 }
               },
-              "queryRef": "Tarih.Donem",
-              "nativeQueryRef": "Donem"
+              "queryRef": "Kisiler.Bolge",
+              "nativeQueryRef": "Bolge"
             }
           ]
         }

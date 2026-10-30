@@ -25,22 +25,15 @@ Tablolar: `Kisiler` (42 kişi, 5 bölge), `Challenge` (393 sahte giriş, 1–27 
 
 ## Panel sayfası nasıl kuruldu?
 
-Sayfa üç katmandan oluşur:
+Power BI görsellerin arkasını bulanıklaştıramaz. Bu yüzden gemi fotoğrafı, buzlu cam paneller, ikonlar ve sabit başlıklar tek bir **sayfa arka plan resmine** (`TEU_Panel_Arkaplan.png`) gömüldü. Veriye bağlı her şey (sayılar, grafikler, gösterge, dilimleyiciler) bu resmin üstünde arka planı şeffaf Power BI görselleridir.
 
-1. **Sayfa arka planı:** gemi fotoğrafı. Dosyada koyu düz renk olarak gelir, fotoğrafı siz eklersiniz (aşağıda).
-2. **Panel katmanı:** sayfanın tamamını kaplayan bir Görüntü görseli (`TEU_Panel_Katmani.png`). Yarı saydam koyu paneller, ikonlar ve sabit başlıklar bu şeffaf PNG'de.
-3. **Veri görselleri:** sayılar, grafikler, gösterge ve dilimleyiciler. Arka planları şeffaf.
+**Fotoğrafı değiştirmek için:**
+1. `python3 dashboard/mockup/grade_photo.py <yeni-fotoğraf>`: fotoğrafı tasarımın ışığına göre renklendirir ve 1920×1080 tuvale yerleştirir (`teu-gemi-arkaplan.png`). Geminin konumu betiğin başındaki `SHIP_BOTTOM_SRC` / `SHIP_BOTTOM_DST` ayarlarıyla değişir.
+2. `dashboard/mockup/teu-glass.html?photo=teu-gemi-arkaplan.png&bg` sayfasının 1920×1080 ekran görüntüsünü `teu-panel-arkaplan.png` olarak alın.
+3. `python3 dashboard/pbip/build_pbip.py` ile projeyi yeniden üretin.
 
-**Gemi fotoğrafını eklemek:**
-1. Panel sayfasında tuvalin boş bir yerine tıklayın (hiçbir görsel seçili olmasın).
-2. **Biçim → Kanvas arka planı → Resim → Gözat** ile fotoğrafı seçin.
-3. **Görüntü sığdırma: Doldur**, **Saydamlık: %0** yapın.
+Bunun yerine hazır bir resmi Power BI'da da koyabilirsiniz: Panel sayfasında boş bir yere tıklayın, **Biçim → Kanvas arka planı → Resim** ile seçin, **Görüntü sığdırma: Sığdır** yapın. Paneller resmin içinde olduğu için yalnızca fotoğraf koyarsanız kartlar okunaksız kalır. Bu durumda `dashboard/mockup/teu-panel-katmani.png` (şeffaf panel katmanı) dosyasını bir Görüntü görseli olarak sayfanın en altına ekleyin.
 
-En iyi sonucu 1920×1080 veya daha büyük, yatay, üst-orta kısmı sakin bir fotoğraf verir. Paneller fotoğrafın alt yarısını kapatır.
-
-- Power BI görsellerin arkasını bulanıklaştıramaz. Bu yüzden paneller buzlu cam değil, yarı saydam koyudur.
-- Bir başlığı veya ikonu değiştirmek için `dashboard/mockup/teu-glass.html?bg&layer` sayfasını düzenleyip şeffaf arka planlı 1920×1080 ekran görüntüsünü yeniden alın, sonra betiği çalıştırın.
-- Panel katmanını yanlışlıkla seçip taşımamak için Seçim bölmesinde (Görünüm → Seçim) gizleyip açabilir veya en alta sabit tutabilirsiniz.
 - Görselleri taşırsanız arka plandaki cam panellerle hizası bozulur. Görünüm → Kılavuz çizgileri / Izgaraya yasla seçenekleri işe yarar.
 - Sol menü ikonları, "TEU Ekle" ve "Rapor Oluştur" düğmeleri resmin parçasıdır, tıklanmaz. Sayfalar arasında Power BI'ın sayfa sekmeleriyle geçin.
 

@@ -2,15 +2,15 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
   "name": "fc1de4e7dc9a748743d0",
   "position": {
-    "x": 748,
+    "x": 1240,
     "y": 596,
-    "z": 410,
+    "z": 420,
     "height": 172,
-    "width": 228,
-    "tabOrder": 410
+    "width": 220,
+    "tabOrder": 420
   },
   "visual": {
-    "visualType": "lineChart",
+    "visualType": "clusteredColumnChart",
     "query": {
       "queryState": {
         "Category": {
@@ -42,27 +42,12 @@
                       "Entity": "_Olculer"
                     }
                   },
-                  "Property": "Son 7 Gün Sen"
+                  "Property": "Son 7 Gün Benim TEU"
                 }
               },
-              "queryRef": "_Olculer.Son 7 Gün Sen",
-              "nativeQueryRef": "Son 7 Gün Sen",
-              "displayName": "Sen"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Olculer"
-                    }
-                  },
-                  "Property": "Son 7 Gün Öndeki"
-                }
-              },
-              "queryRef": "_Olculer.Son 7 Gün Öndeki",
-              "nativeQueryRef": "Son 7 Gün Öndeki",
-              "displayName": "Bir öndeki"
+              "queryRef": "_Olculer.Son 7 Gün Benim TEU",
+              "nativeQueryRef": "Son 7 Gün Benim TEU",
+              "displayName": "TEU"
             }
           ]
         }
@@ -120,7 +105,7 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             },
@@ -165,38 +150,6 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "position": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Top'"
-                }
-              }
-            },
-            "fontSize": {
-              "expr": {
-                "Literal": {
-                  "Value": "9D"
-                }
-              }
-            },
-            "labelColor": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#B3ADA6'"
-                    }
-                  }
-                }
-              }
-            },
-            "showTitle": {
-              "expr": {
-                "Literal": {
                   "Value": "false"
                 }
               }
@@ -212,50 +165,40 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#FF7A2F'"
+                      "Value": "'#F6B73C'"
                     }
                   }
                 }
               }
             }
-          },
-          "selector": {
-            "metadata": "_Olculer.Son 7 Gün Sen"
           }
-        },
+        }
+      ],
+      "labels": [
         {
           "properties": {
-            "fill": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "color": {
               "solid": {
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#B3ADA6'"
+                      "Value": "'#F5F2EE'"
                     }
                   }
                 }
               }
-            }
-          },
-          "selector": {
-            "metadata": "_Olculer.Son 7 Gün Öndeki"
-          }
-        }
-      ],
-      "lineStyles": [
-        {
-          "properties": {
-            "strokeWidth": {
-              "expr": {
-                "Literal": {
-                  "Value": "3D"
-                }
-              }
             },
-            "showMarker": {
+            "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "9D"
                 }
               }
             }

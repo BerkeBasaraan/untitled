@@ -2,18 +2,18 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
   "name": "4f64b88fb023b444ec4b",
   "position": {
-    "x": 1586,
-    "y": 556,
-    "z": 700,
-    "height": 30,
-    "width": 200,
-    "tabOrder": 700
+    "x": 1516,
+    "y": 596,
+    "z": 710,
+    "height": 230,
+    "width": 340,
+    "tabOrder": 710
   },
   "visual": {
-    "visualType": "card",
+    "visualType": "gauge",
     "query": {
       "queryState": {
-        "Values": {
+        "Y": {
           "projections": [
             {
               "field": {
@@ -23,49 +23,55 @@
                       "Entity": "_Olculer"
                     }
                   },
-                  "Property": "Hedef Etiketi"
+                  "Property": "Benim TEU"
                 }
               },
-              "queryRef": "_Olculer.Hedef Etiketi",
-              "nativeQueryRef": "Hedef Etiketi"
+              "queryRef": "_Olculer.Benim TEU",
+              "nativeQueryRef": "Benim TEU",
+              "displayName": "TEU"
+            }
+          ]
+        },
+        "MaxValue": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Olculer"
+                    }
+                  },
+                  "Property": "Benim Hedef"
+                }
+              },
+              "queryRef": "_Olculer.Benim Hedef",
+              "nativeQueryRef": "Benim Hedef",
+              "displayName": "Hedef"
             }
           ]
         }
       }
     },
     "objects": {
-      "labels": [
+      "dataPoint": [
         {
           "properties": {
-            "fontSize": {
-              "expr": {
-                "Literal": {
-                  "Value": "11D"
-                }
-              }
-            },
-            "color": {
+            "fill": {
               "solid": {
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#B3ADA6'"
+                      "Value": "'#FF7A2F'"
                     }
                   }
-                }
-              }
-            },
-            "fontFamily": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Segoe UI'"
                 }
               }
             }
           }
         }
       ],
-      "categoryLabels": [
+      "calloutValue": [
         {
           "properties": {
             "show": {
@@ -78,13 +84,13 @@
           }
         }
       ],
-      "wordWrap": [
+      "labels": [
         {
           "properties": {
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             }

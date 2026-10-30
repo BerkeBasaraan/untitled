@@ -3,11 +3,11 @@
   "name": "6a377f9354a56508e380",
   "position": {
     "x": 48,
-    "y": 640,
-    "z": 300,
-    "height": 76,
-    "width": 200,
-    "tabOrder": 300
+    "y": 716,
+    "z": 301,
+    "height": 52,
+    "width": 236,
+    "tabOrder": 301
   },
   "visual": {
     "visualType": "card",
@@ -23,11 +23,11 @@
                       "Entity": "_Olculer"
                     }
                   },
-                  "Property": "Benim TEU"
+                  "Property": "Hedef Açıklama"
                 }
               },
-              "queryRef": "_Olculer.Benim TEU",
-              "nativeQueryRef": "Benim TEU"
+              "queryRef": "_Olculer.Hedef Açıklama",
+              "nativeQueryRef": "Hedef Açıklama"
             }
           ]
         }
@@ -40,7 +40,7 @@
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "34D"
+                  "Value": "10D"
                 }
               }
             },
@@ -49,7 +49,7 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#F5F2EE'"
+                      "Value": "'#B3ADA6'"
                     }
                   }
                 }
@@ -58,7 +58,7 @@
             "fontFamily": {
               "expr": {
                 "Literal": {
-                  "Value": "'Segoe UI Semibold'"
+                  "Value": "'Segoe UI'"
                 }
               }
             }

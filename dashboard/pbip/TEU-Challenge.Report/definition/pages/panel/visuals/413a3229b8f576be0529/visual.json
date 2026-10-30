@@ -3,11 +3,11 @@
   "name": "413a3229b8f576be0529",
   "position": {
     "x": 1016,
-    "y": 640,
-    "z": 320,
-    "height": 76,
-    "width": 200,
-    "tabOrder": 320
+    "y": 716,
+    "z": 321,
+    "height": 52,
+    "width": 236,
+    "tabOrder": 321
   },
   "visual": {
     "visualType": "card",
@@ -23,11 +23,11 @@
                       "Entity": "_Olculer"
                     }
                   },
-                  "Property": "Bugün Benim TEU"
+                  "Property": "Bugün Açıklama"
                 }
               },
-              "queryRef": "_Olculer.Bugün Benim TEU",
-              "nativeQueryRef": "Bugün Benim TEU"
+              "queryRef": "_Olculer.Bugün Açıklama",
+              "nativeQueryRef": "Bugün Açıklama"
             }
           ]
         }
@@ -40,7 +40,7 @@
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "34D"
+                  "Value": "10D"
                 }
               }
             },
@@ -49,7 +49,7 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#F5F2EE'"
+                      "Value": "'#B3ADA6'"
                     }
                   }
                 }
@@ -58,7 +58,7 @@
             "fontFamily": {
               "expr": {
                 "Literal": {
-                  "Value": "'Segoe UI Semibold'"
+                  "Value": "'Segoe UI'"
                 }
               }
             }

@@ -2,52 +2,70 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
   "name": "18ad546c34dad0d7a4dc",
   "position": {
-    "x": 1489,
-    "y": 450,
-    "z": 201,
-    "height": 48,
-    "width": 96,
-    "tabOrder": 201
+    "x": 48,
+    "y": 640,
+    "z": 300,
+    "height": 76,
+    "width": 200,
+    "tabOrder": 300
   },
   "visual": {
-    "visualType": "slicer",
+    "visualType": "card",
     "query": {
       "queryState": {
         "Values": {
           "projections": [
             {
               "field": {
-                "Column": {
+                "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Kisiler"
+                      "Entity": "_Olculer"
                     }
                   },
-                  "Property": "Bolge"
+                  "Property": "Benim TEU"
                 }
               },
-              "queryRef": "Kisiler.Bolge",
-              "nativeQueryRef": "Bolge"
+              "queryRef": "_Olculer.Benim TEU",
+              "nativeQueryRef": "Benim TEU"
             }
           ]
         }
       }
     },
     "objects": {
-      "data": [
+      "labels": [
         {
           "properties": {
-            "mode": {
+            "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "'Dropdown'"
+                  "Value": "34D"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#F5F2EE'"
+                    }
+                  }
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Segoe UI Semibold'"
                 }
               }
             }
           }
         }
       ],
-      "header": [
+      "categoryLabels": [
         {
           "properties": {
             "show": {
@@ -60,35 +78,13 @@
           }
         }
       ],
-      "items": [
+      "wordWrap": [
         {
           "properties": {
-            "fontColor": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#F5F2EE'"
-                    }
-                  }
-                }
-              }
-            },
-            "background": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#1A1714'"
-                    }
-                  }
-                }
-              }
-            },
-            "textSize": {
+            "show": {
               "expr": {
                 "Literal": {
-                  "Value": "11D"
+                  "Value": "true"
                 }
               }
             }

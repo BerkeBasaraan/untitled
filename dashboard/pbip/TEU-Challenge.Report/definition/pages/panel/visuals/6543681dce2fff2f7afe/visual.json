@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
   "name": "6543681dce2fff2f7afe",
   "position": {
-    "x": 52,
+    "x": 494,
     "y": 990,
-    "z": 543,
+    "z": 544,
     "height": 40,
     "width": 240,
-    "tabOrder": 543
+    "tabOrder": 544
   },
   "visual": {
     "visualType": "card",
@@ -23,11 +23,11 @@
                       "Entity": "_Olculer"
                     }
                   },
-                  "Property": "Günlük Ortalama"
+                  "Property": "Gereken Tempo"
                 }
               },
-              "queryRef": "_Olculer.Günlük Ortalama",
-              "nativeQueryRef": "Günlük Ortalama"
+              "queryRef": "_Olculer.Gereken Tempo",
+              "nativeQueryRef": "Gereken Tempo"
             }
           ]
         }

@@ -3,11 +3,11 @@
   "name": "2939b4cc7ec4ae6cc0c0",
   "position": {
     "x": 193,
-    "y": 812,
-    "z": 540,
-    "height": 58,
+    "y": 868,
+    "z": 541,
+    "height": 28,
     "width": 400,
-    "tabOrder": 540
+    "tabOrder": 541
   },
   "visual": {
     "visualType": "card",
@@ -23,11 +23,11 @@
                       "Entity": "_Olculer"
                     }
                   },
-                  "Property": "Hedefe Kalan TEU"
+                  "Property": "Üst Sıra Metin"
                 }
               },
-              "queryRef": "_Olculer.Hedefe Kalan TEU",
-              "nativeQueryRef": "Hedefe Kalan TEU"
+              "queryRef": "_Olculer.Üst Sıra Metin",
+              "nativeQueryRef": "Üst Sıra Metin"
             }
           ]
         }
@@ -40,7 +40,7 @@
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "30D"
+                  "Value": "12D"
                 }
               }
             },
@@ -49,7 +49,7 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#FF7A2F'"
+                      "Value": "'#F5F2EE'"
                     }
                   }
                 }

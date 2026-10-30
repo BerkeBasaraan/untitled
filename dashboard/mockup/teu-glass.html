@@ -360,6 +360,10 @@ if (params.has("photo")) {
   img.src = params.get("photo");
   img.style.cssText = "position:absolute;inset:0;width:1920px;height:1080px;object-fit:cover";
   document.getElementById("scene").replaceWith(img);
+  // fotoğrafta başlık yazıları okunaklı kalsın diye üst kısmı ek olarak koyulaştır
+  document.querySelector(".shade").style.background =
+    "linear-gradient(180deg, rgba(0,0,0,.72) 0%, rgba(0,0,0,.35) 18%, transparent 30%), " +
+    getComputedStyle(document.querySelector(".shade")).backgroundImage;
 }
 if (params.has("layer")) {
   document.getElementById("scene").style.display = "none";

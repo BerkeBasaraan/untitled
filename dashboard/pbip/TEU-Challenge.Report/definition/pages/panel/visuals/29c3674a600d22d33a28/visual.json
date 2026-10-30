@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
   "name": "29c3674a600d22d33a28",
   "position": {
-    "x": 1566,
-    "y": 846,
-    "z": 730,
-    "height": 30,
-    "width": 240,
-    "tabOrder": 730
+    "x": 1504,
+    "y": 990,
+    "z": 740,
+    "height": 36,
+    "width": 364,
+    "tabOrder": 740
   },
   "visual": {
     "visualType": "card",
@@ -23,11 +23,11 @@
                       "Entity": "_Olculer"
                     }
                   },
-                  "Property": "Hedef İlerleme Metin"
+                  "Property": "Bölge İçi Metin"
                 }
               },
-              "queryRef": "_Olculer.Hedef İlerleme Metin",
-              "nativeQueryRef": "Hedef İlerleme Metin"
+              "queryRef": "_Olculer.Bölge İçi Metin",
+              "nativeQueryRef": "Bölge İçi Metin"
             }
           ]
         }
@@ -40,7 +40,7 @@
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "11D"
+                  "Value": "10D"
                 }
               }
             },

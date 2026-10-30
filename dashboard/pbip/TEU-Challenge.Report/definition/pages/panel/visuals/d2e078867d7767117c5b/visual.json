@@ -2,38 +2,89 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
   "name": "d2e078867d7767117c5b",
   "position": {
-    "x": 0,
-    "y": 0,
-    "z": 0,
-    "height": 1080,
-    "width": 1920,
-    "tabOrder": 0
+    "x": 560,
+    "y": 40,
+    "z": 100,
+    "height": 56,
+    "width": 800,
+    "tabOrder": 100
   },
   "visual": {
-    "visualType": "image",
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Olculer"
+                    }
+                  },
+                  "Property": "Selamlama"
+                }
+              },
+              "queryRef": "_Olculer.Selamlama",
+              "nativeQueryRef": "Selamlama"
+            }
+          ]
+        }
+      }
+    },
     "objects": {
-      "general": [
+      "labels": [
         {
           "properties": {
-            "imageUrl": {
+            "fontSize": {
               "expr": {
-                "ResourcePackageItem": {
-                  "PackageName": "RegisteredResources",
-                  "PackageType": 1,
-                  "ItemName": "TEU_Panel_Katmani.png"
+                "Literal": {
+                  "Value": "20D"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#F5F2EE'"
+                    }
+                  }
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Segoe UI Semibold'"
                 }
               }
             }
           }
         }
       ],
-      "imageScaling": [
+      "categoryLabels": [
         {
           "properties": {
-            "imageScalingType": {
+            "show": {
               "expr": {
                 "Literal": {
-                  "Value": "'Fit'"
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "wordWrap": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
                 }
               }
             }
