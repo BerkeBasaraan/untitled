@@ -1,0 +1,461 @@
+{
+ "panels": [
+  {
+   "id": "kpi-1",
+   "x": 40,
+   "y": 316,
+   "w": 355,
+   "h": 140,
+   "kpi": true,
+   "title": {
+    "x": 65,
+    "y": 337,
+    "w": 305,
+    "h": 20,
+    "text": "Takip edilen rakip",
+    "size": 13,
+    "weight": "500",
+    "color": "rgba(245, 242, 238, 0.68)",
+    "spacing": "normal"
+   },
+   "tag": {
+    "x": 310.8125,
+    "y": 337,
+    "w": 59.1875,
+    "h": 20,
+    "text": "Kapsam",
+    "cls": "mute"
+   },
+   "sub": null,
+   "legend": [],
+   "file": "panel-kpi-1.png"
+  },
+  {
+   "id": "kpi-2",
+   "x": 411,
+   "y": 316,
+   "w": 355,
+   "h": 140,
+   "kpi": true,
+   "title": {
+    "x": 436,
+    "y": 337,
+    "w": 305,
+    "h": 20,
+    "text": "Güncel fiyat oranı",
+    "size": 13,
+    "weight": "500",
+    "color": "rgba(245, 242, 238, 0.68)",
+    "spacing": "normal"
+   },
+   "tag": {
+    "x": 696.21875,
+    "y": 337,
+    "w": 44.78125,
+    "h": 20,
+    "text": "Takip",
+    "cls": "warn"
+   },
+   "sub": null,
+   "legend": [],
+   "file": "panel-kpi-2.png"
+  },
+  {
+   "id": "kpi-3",
+   "x": 782,
+   "y": 316,
+   "w": 355,
+   "h": 140,
+   "kpi": true,
+   "title": {
+    "x": 807,
+    "y": 337,
+    "w": 305,
+    "h": 20,
+    "text": "Rakip yük arıyor",
+    "size": 13,
+    "weight": "500",
+    "color": "rgba(245, 242, 238, 0.68)",
+    "spacing": "normal"
+   },
+   "tag": {
+    "x": 1029.90625,
+    "y": 337,
+    "w": 82.09375,
+    "h": 20,
+    "text": "Fiyat baskısı",
+    "cls": "hot"
+   },
+   "sub": null,
+   "legend": [],
+   "file": "panel-kpi-3.png"
+  },
+  {
+   "id": "kpi-4",
+   "x": 1153,
+   "y": 316,
+   "w": 355,
+   "h": 140,
+   "kpi": true,
+   "title": {
+    "x": 1178,
+    "y": 337,
+    "w": 305,
+    "h": 20,
+    "text": "Yetersiz ekipman",
+    "size": 13,
+    "weight": "500",
+    "color": "rgba(245, 242, 238, 0.68)",
+    "spacing": "normal"
+   },
+   "tag": {
+    "x": 1437.03125,
+    "y": 337,
+    "w": 45.96875,
+    "h": 20,
+    "text": "Fırsat",
+    "cls": "warn"
+   },
+   "sub": null,
+   "legend": [],
+   "file": "panel-kpi-4.png"
+  },
+  {
+   "id": "kpi-5",
+   "x": 1524,
+   "y": 316,
+   "w": 355,
+   "h": 140,
+   "kpi": true,
+   "title": {
+    "x": 1549,
+    "y": 337,
+    "w": 305,
+    "h": 20,
+    "text": "Direkt servis avantajı",
+    "size": 13,
+    "weight": "500",
+    "color": "rgba(245, 242, 238, 0.68)",
+    "spacing": "normal"
+   },
+   "tag": {
+    "x": 1759.0625,
+    "y": 337,
+    "w": 94.9375,
+    "h": 20,
+    "text": "Satış argümanı",
+    "cls": "ok"
+   },
+   "sub": null,
+   "legend": [],
+   "file": "panel-kpi-5.png"
+  },
+  {
+   "id": "koridor",
+   "x": 40,
+   "y": 472,
+   "w": 1120,
+   "h": 300,
+   "kpi": false,
+   "title": {
+    "x": 65,
+    "y": 493,
+    "w": 1070,
+    "h": 20,
+    "text": "Pazar fiyat koridoru · 40'",
+    "size": 17,
+    "weight": "600",
+    "color": "rgb(245, 242, 238)",
+    "spacing": "normal"
+   },
+   "tag": null,
+   "sub": {
+    "x": 65,
+    "y": 516,
+    "w": 1070,
+    "h": 15,
+    "text": "Rota başına rakip fiyatlarının en düşük – medyan – en yüksek değeri · çubuklar her satırın kendi aralığında ölçeklenir",
+    "size": 12.5,
+    "weight": "400",
+    "color": "rgba(245, 242, 238, 0.44)",
+    "spacing": "normal"
+   },
+   "legend": [],
+   "file": "panel-koridor.png"
+  },
+  {
+   "id": "artislar",
+   "x": 1176,
+   "y": 472,
+   "w": 704,
+   "h": 300,
+   "kpi": false,
+   "title": {
+    "x": 1201,
+    "y": 493,
+    "w": 654,
+    "h": 20,
+    "text": "Genel fiyat artışları",
+    "size": 17,
+    "weight": "600",
+    "color": "rgb(245, 242, 238)",
+    "spacing": "normal"
+   },
+   "tag": null,
+   "sub": {
+    "x": 1201,
+    "y": 516,
+    "w": 654,
+    "h": 15,
+    "text": "Toplam 26 duyuru · 4 ertelendi · en yeni 6 kayıt (başlangıç ya da ertelenen tarih)",
+    "size": 12.5,
+    "weight": "400",
+    "color": "rgba(245, 242, 238, 0.44)",
+    "spacing": "normal"
+   },
+   "legend": [],
+   "file": "panel-artislar.png"
+  },
+  {
+   "id": "usec",
+   "x": 40,
+   "y": 788,
+   "w": 552,
+   "h": 252,
+   "kpi": false,
+   "title": {
+    "x": 65,
+    "y": 809,
+    "w": 502,
+    "h": 20,
+    "text": "USEC · rakip 40' fiyatları",
+    "size": 17,
+    "weight": "600",
+    "color": "rgb(245, 242, 238)",
+    "spacing": "normal"
+   },
+   "tag": null,
+   "sub": {
+    "x": 65,
+    "y": 832,
+    "w": 502,
+    "h": 15,
+    "text": "USA-W rotası, rakip başına medyan, USD · turuncu = en ucuz",
+    "size": 12.5,
+    "weight": "400",
+    "color": "rgba(245, 242, 238, 0.44)",
+    "spacing": "normal"
+   },
+   "legend": [],
+   "file": "panel-usec.png"
+  },
+  {
+   "id": "sinyal",
+   "x": 608,
+   "y": 788,
+   "w": 552,
+   "h": 252,
+   "kpi": false,
+   "title": {
+    "x": 633,
+    "y": 809,
+    "w": 502,
+    "h": 20,
+    "text": "Servis bazında pazar sinyali",
+    "size": 17,
+    "weight": "600",
+    "color": "rgb(245, 242, 238)",
+    "spacing": "normal"
+   },
+   "tag": null,
+   "sub": null,
+   "legend": [
+    {
+     "x": 633,
+     "y": 839,
+     "w": 107,
+     "h": 15,
+     "text": "Rakip yük arıyor",
+     "color": "rgb(255, 122, 47)"
+    },
+    {
+     "x": 756,
+     "y": 839,
+     "w": 112.96875,
+     "h": 15,
+     "text": "Yetersiz ekipman",
+     "color": "rgb(246, 183, 60)"
+    }
+   ],
+   "file": "panel-sinyal.png"
+  },
+  {
+   "id": "notlar",
+   "x": 1176,
+   "y": 788,
+   "w": 704,
+   "h": 252,
+   "kpi": false,
+   "title": {
+    "x": 1201,
+    "y": 809,
+    "w": 654,
+    "h": 20,
+    "text": "Sahadan notlar & sefer aksaklıkları",
+    "size": 17,
+    "weight": "600",
+    "color": "rgb(245, 242, 238)",
+    "spacing": "normal"
+   },
+   "tag": null,
+   "sub": null,
+   "legend": [],
+   "file": "panel-notlar.png"
+  }
+ ],
+ "pills": [
+  {
+   "x": 1220.671875,
+   "y": 38,
+   "w": 76.28125,
+   "h": 40,
+   "text": "Tümü",
+   "on": true
+  },
+  {
+   "x": 1304.953125,
+   "y": 38,
+   "w": 86.734375,
+   "h": 40,
+   "text": "USA-W",
+   "on": false
+  },
+  {
+   "x": 1399.6875,
+   "y": 38,
+   "w": 92.71875,
+   "h": 40,
+   "text": "NWC-W",
+   "on": false
+  },
+  {
+   "x": 1500.40625,
+   "y": 38,
+   "w": 79.96875,
+   "h": 40,
+   "text": "TRI-W",
+   "on": false
+  },
+  {
+   "x": 1588.375,
+   "y": 38,
+   "w": 74.953125,
+   "h": 40,
+   "text": "TRI-E",
+   "on": false
+  },
+  {
+   "x": 1671.328125,
+   "y": 38,
+   "w": 82.34375,
+   "h": 40,
+   "text": "TEL-W",
+   "on": false
+  },
+  {
+   "x": 1769.671875,
+   "y": 38,
+   "w": 110.328125,
+   "h": 40,
+   "text": "Hafta 45 ⌄",
+   "on": false
+  }
+ ],
+ "logo": {
+  "x": 40,
+  "y": 30,
+  "w": 56,
+  "h": 56
+ },
+ "brand": [
+  {
+   "x": 110,
+   "y": 36.5,
+   "w": 193.828125,
+   "h": 23,
+   "text": "Rakip & Pazar Radarı",
+   "size": 19,
+   "weight": "700",
+   "color": "rgb(245, 242, 238)",
+   "spacing": "normal"
+  },
+  {
+   "x": 110,
+   "y": 62.5,
+   "w": 193.828125,
+   "h": 16,
+   "text": "Turkon satış istihbaratı · haftalık",
+   "size": 13,
+   "weight": "400",
+   "color": "rgba(245, 242, 238, 0.44)",
+   "spacing": "normal"
+  }
+ ],
+ "week": {
+  "x": 40,
+  "y": 150,
+  "w": 1200,
+  "h": 17,
+  "text": "Hafta 45 · Pazar özeti",
+  "size": 14,
+  "weight": "600",
+  "color": "rgb(255, 122, 47)",
+  "spacing": "1.12px"
+ },
+ "headline": {
+  "x": 40,
+  "y": 177,
+  "w": 1200,
+  "h": 103.03125,
+  "html": "Pazar yumuşak: rakip kayıtlarının <em>%24</em>'ünde<br>\"yük arıyor\" notu var",
+  "size": 46,
+  "weight": "600",
+  "color": "rgb(245, 242, 238)",
+  "spacing": "-0.92px"
+ },
+ "subline": {
+  "x": 40,
+  "y": 292.03125,
+  "w": 1200,
+  "h": 21,
+  "text": "20' ekipman açığı 50 kayıtta bildirildi · USEC'te en ucuz 40' ONE 2.650 USD · aktarmalı servisler 11 gün daha yavaş",
+  "size": 18,
+  "weight": "400",
+  "color": "rgba(245, 242, 238, 0.68)",
+  "spacing": "normal"
+ },
+ "footer": [
+  {
+   "x": 40,
+   "y": 1050,
+   "w": 1049.515625,
+   "h": 14,
+   "text": "Kaynak: Rakip ve Pazar Verileri (SharePoint, haftalık dosyalar) · Tüm fiyatlar USD · EUR/GBP kur dönüşümü Power Query'de eklenecek (maket: 1:1) · \"2150 - 2350\" gibi aralıklar orta noktayla alınır",
+   "size": 11.5,
+   "weight": "400",
+   "color": "rgba(245, 242, 238, 0.44)",
+   "spacing": "normal"
+  },
+  {
+   "x": 1680.65625,
+   "y": 1050,
+   "w": 199.34375,
+   "h": 14,
+   "text": "Hafta 45 verisi · 303 rakip fiyat kaydı",
+   "size": 11.5,
+   "weight": "400",
+   "color": "rgba(245, 242, 238, 0.44)",
+   "spacing": "normal"
+  }
+ ]
+}
