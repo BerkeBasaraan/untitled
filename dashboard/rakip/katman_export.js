@@ -63,6 +63,12 @@ const PAGE = "file://" + path.join(DIR, "rakip-panel.html");
   await page.addStyleTag({ content: ".glass > *, .hero, .brand, .filters, .footer {visibility:hidden!important}" });
   await page.screenshot({ path: path.join(OUT, "_paneller-tam.png") });
 
+  // 5) Power BI sayfa arka planı: fotoğraf + karartma + boş paneller + logo + KPI etiketleri (metinler Power BI'da)
+  await page.goto(PAGE);
+  await page.waitForTimeout(800);
+  await page.addStyleTag({ content: ".glass > *:not(.label), .hero, .brand > div:last-child, .filters, .footer {visibility:hidden!important} .kpi .label {color:transparent!important}" });
+  await page.screenshot({ path: path.join(OUT, "pbi-arkaplan.png") });
+
   fs.copyFileSync(path.join(DIR, "..", "mockup", "teu-gemi-arkaplan.png"), path.join(OUT, "01-gemi-fotograf.png"));
   await browser.close();
 })();
