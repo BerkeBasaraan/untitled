@@ -101,31 +101,45 @@ def textbox(x, y, w, h, paragraphs, z):
     return visual(x, y, w, h, "textbox", objects={"general": [{"properties": {"paragraphs": ps}}]}, z=z)
 
 
-def text_card(x, y, w, h, measure, size, color, z, bold=False):
-    """Sola hizalı tek değer: çok satırlı kart (etiket ve kenar çubuğu kapalı)."""
-    return visual(x, y, w, h, "multiRowCard", {"Values": {"projections": [proj(mea(measure))]}}, objects={
-        "dataLabels": props(fontSize=size, color=solid(color), fontFamily="Segoe UI Semibold" if bold else "Segoe UI"),
-        "categoryLabels": props(show=False),
-        "card": props(barShow=False, outlineStyle=0, cardPadding=0, cardBackground=solid(PANEL_BG)),
-        "cardTitle": props(show=False),
+def text_card(x, y, w, h, measure, size, color, z, bold=False, align="left"):
+    """Ölçüden gelen metin: dolgusu, çerçevesi ve ikonu kapalı düğme (sola hizalı, satır kaydırır)."""
+    states = ["default", "hover", "press", "selected"]
+    text = {"show": lit(True), "text": {"expr": mea(measure)}, "fontSize": lit(size), "fontColor": solid(color),
+            "fontFamily": lit("Segoe UI Semibold" if bold else "Segoe UI"), "horizontalAlignment": lit(align),
+            "verticalAlignment": lit("top"), "leftMargin": lit(0), "rightMargin": lit(0), "topMargin": lit(0),
+            "bottomMargin": lit(0)}
+    return visual(x, y, w, h, "actionButton", objects={
+        "text": [{"properties": text, "selector": {"id": st}} for st in states],
+        "fill": [{"properties": {"show": lit(False)}, "selector": {"id": st}} for st in states],
+        "outline": [{"properties": {"show": lit(False)}, "selector": {"id": st}} for st in states],
+        "icon": [{"properties": {"show": lit(False)}, "selector": {"id": st}} for st in states],
+        "shadow": props(show=False), "glow": props(show=False),
     }, z=z)
 
 
-def dark_table(x, y, w, h, columns, z, sort=None):
-    return visual(x, y, w, h, "tableEx", {"Values": {"projections": columns}}, objects={
-        "columnHeaders": props(fontColor=solid(LIGHT3), backColor=solid(PANEL_BG), fontSize=9, outlineStyle=0),
+def dark_table(x, y, w, h, columns, z, sort=None, widths=None, font=11, image=None):
+    """widths: sütun başına piksel genişlik (sırasıyla); image: (genişlik, yükseklik) SVG/resim sütunları için."""
+    objects = {
+        "columnHeaders": props(fontColor=solid(LIGHT3), backColor=solid(PANEL_BG), fontSize=font - 1, outlineStyle=0,
+                               autoSizeColumnWidth=False, wordWrap=False),
         "values": props(fontColorPrimary=solid(LIGHT), fontColorSecondary=solid(LIGHT), backColorPrimary=solid(PANEL_BG),
-                        backColorSecondary=solid(PANEL_BG), fontSize=9.5, outlineStyle=0),
-        "grid": props(gridHorizontal=True, gridHorizontalColor=solid("#2E2B28"), gridVertical=False, rowPadding=3,
-                      outlineColor=solid(PANEL_BG)),
+                        backColorSecondary=solid(PANEL_BG), fontSize=font, outlineStyle=0, wordWrap=False),
+        "grid": props(gridHorizontal=True, gridHorizontalColor=solid("#2E2B28"), gridVertical=False, rowPadding=2,
+                      outlineColor=solid(PANEL_BG), textSize=font),
         "total": props(totals=False),
-    }, z=z, sort=sort)
+    }
+    if image:
+        objects["grid"][0]["properties"].update(imageWidth=lit(image[0]), imageHeight=lit(image[1]))
+    if widths:
+        objects["columnWidth"] = [{"properties": {"value": lit(wd)}, "selector": {"metadata": c["queryRef"]}}
+                                  for c, wd in zip(columns, widths)]
+    return visual(x, y, w, h, "tableEx", {"Values": {"projections": columns}}, objects=objects, z=z, sort=sort)
 
 
 def dark_axes():
     return {"categoryAxis": props(show=True, fontSize=9, labelColor=solid(LIGHT2), showAxisTitle=False, gridlineShow=False),
             "valueAxis": props(show=False, gridlineShow=False, showAxisTitle=False),
-            "labels": props(show=True, color=solid(LIGHT), fontSize=9)}
+            "labels": props(show=True, color=solid(LIGHT), fontSize=10, labelDisplayUnits=1, labelPrecision=0)}
 
 
 # ---------------------------------------------------------------- Power Query
@@ -403,12 +417,28 @@ RETURN
     ISINSCOPE ( RakipNavlun[POD] ),
     RANKX ( ALLSELECTED ( RakipNavlun[Servis], RakipNavlun[POD] ), [Gözlem 40], , DESC, SKIP )
 )""", "0", None),
-    ("Koridorda", "[Rota Sırası] <= 10 && [Gözlem 40] >= 3", None, "En çok fiyat girilen 10 rota (en az 3 gözlem)."),
+    ("Koridorda", "[Rota Sırası] <= 8 && [Gözlem 40] >= 3", None, "En çok fiyat girilen 8 rota (en az 3 gözlem)."),
     ("K Gözlem", "IF ( [Koridorda], [Gözlem 40] )", "0", None),
     ("K Min", "IF ( [Koridorda], [Min 40] )", "#,0", None),
     ("K Medyan", "IF ( [Koridorda], [Medyan 40] )", "#,0", None),
     ("K Max", "IF ( [Koridorda], [Max 40] )", "#,0", None),
     ("K En Ucuz", "IF ( [Koridorda], [En Ucuz Rakip] )", None, None),
+    ("K Aralık", """VAR mn = [K Min]
+VAR mx = [K Max]
+VAR md = [K Medyan]
+VAR W = 330
+VAR pos = ROUND ( DIVIDE ( md - mn, mx - mn, 0 ) * W, 0 )
+VAR lbl = "font-family='Segoe UI' font-size='12' fill='%23B3AFAB'"
+RETURN
+    IF (
+        NOT ISBLANK ( md ),
+        "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='460' height='18'>"
+            & "<text x='0' y='13' " & lbl & ">" & FORMAT ( mn, "0" ) & "</text>"
+            & "<rect x='52' y='7' width='" & W & "' height='4' rx='2' fill='%23FFFFFF' fill-opacity='0.16'/>"
+            & "<rect x='52' y='7' width='" & pos & "' height='4' rx='2' fill='%23FF7A2F'/>"
+            & "<circle cx='" & 52 + pos & "' cy='9' r='6' fill='%23FFFFFF' stroke='%23FF7A2F' stroke-width='2.5'/>"
+            & "<text x='" & 52 + W + 10 & "' y='13' " & lbl & ">" & FORMAT ( mx, "0" ) & "</text></svg>"
+    )""", None, "Satırın kendi en düşük–en yüksek aralığında medyanın konumu (tablo resim sütunu)."),
     ("USEC Medyan 40", 'CALCULATE ( [Medyan 40], RakipNavlun[POD] = "USEC" )', "#,0", None),
     ("USEC Min", 'CALCULATE ( [Min 40], RakipNavlun[POD] = "USEC" )', "#,0", None),
     ("USEC En Ucuz", 'CALCULATE ( [En Ucuz Rakip], RakipNavlun[POD] = "USEC" )', None, None),
@@ -483,6 +513,8 @@ for name, dax, fmt, desc in MEASURES:
         m["formatString"] = fmt
     if desc:
         m["description"] = desc
+    if name == "K Aralık":
+        m["dataCategory"] = "ImageUrl"
     measures.append(m)
 
 expressions = [{"name": n, "kind": "m", "expression": e, "lineageTag": uid(),
@@ -528,14 +560,25 @@ model = {"compatibilityLevel": 1567, "model": {
 
 # ---------------------------------------------------------------- Rapor
 z = iter(range(1000, 100000, 100))
+def slicers(y):
+    """Servis: yatay çipler (tasarımdaki gibi); Hafta: koyu açılır liste, tek seçim, en yeni hafta en üstte."""
+    items = props(fontColor=solid(LIGHT2), background=solid(PANEL_BG), textSize=11, outlineStyle=0)
+    servis = visual(1040, y, 620, 44, "slicer", {"Values": {"projections": [proj(col("Servisler", "Servis"))]}}, objects={
+        "data": props(mode="Basic"), "general": props(orientation=1, outlineColor=solid(PANEL_BG), outlineWeight=0),
+        "header": props(show=False), "items": items, "selection": props(singleSelect=False, selectAllCheckboxEnabled=False),
+    }, z=next(z))
+    hafta = visual(1676, y, 204, 44, "slicer", {"Values": {"projections": [proj(col("Dosyalar", "Hafta"))]}}, objects={
+        "data": props(mode="Dropdown"), "header": props(show=False), "items": items,
+        "dropdown": props(borderColor=solid("#3A3633"), borderRadius=20, iconColor=solid(LIGHT2)),
+        "general": props(outlineColor=solid(PANEL_BG), outlineWeight=0),
+        "selection": props(singleSelect=True),
+    }, z=next(z), sort=[(col("Dosyalar", "Hafta"), "Descending")])
+    return [servis, hafta]
+
+
 radar = [textbox(108, 32, 420, 56, [("Rakip & Pazar Radarı", 14, True, LIGHT),
                                      ("Turkon satış istihbaratı · haftalık", 10, False, LIGHT3)], next(z))]
-for i, (fld, x, w) in enumerate([(col("Servisler", "Servis"), 1452, 210), (col("Dosyalar", "Hafta"), 1676, 204)]):
-    radar.append(visual(x, 34, w, 48, "slicer", {"Values": {"projections": [proj(fld)]}}, objects={
-        "data": props(mode="Dropdown"), "header": props(show=False),
-        "items": props(fontColor=solid(LIGHT), background=solid(PANEL_BG), textSize=11),
-        "selection": props(singleSelect=i == 1),
-    }, z=next(z), sort=[(fld, "Descending")] if i == 1 else None))
+radar += slicers(36)
 radar += [
     text_card(40, 146, 900, 30, "Hafta Etiketi", 10.5, ACC, next(z), bold=True),
     text_card(40, 176, 1300, 110, "Başlık", 32, LIGHT, next(z), bold=True),
@@ -559,12 +602,12 @@ def panel_head(pid, title, sub=None):
 
 p = PANEL["koridor"]
 radar += [panel_head("koridor", "Pazar fiyat koridoru · 40' (USD)",
-                     "En çok fiyat girilen 10 rota · rakip fiyatlarının en düşük – medyan – en yüksek değeri"),
-          dark_table(p["x"] + 16, p["y"] + 68, p["w"] - 32, p["h"] - 82, [
+                     "En çok fiyat girilen 8 rota · rakip fiyatlarının en düşük – medyan – en yüksek değeri"),
+          dark_table(p["x"] + 16, p["y"] + 68, p["w"] - 32, p["h"] - 80, [
               proj(col("RakipNavlun", "Servis"), "Servis"), proj(col("RakipNavlun", "POD"), "POD"),
-              proj(mea("K Gözlem"), "Gözlem"), proj(mea("K Min"), "En düşük"), proj(mea("K Medyan"), "Medyan"),
-              proj(mea("K Max"), "En yüksek"), proj(mea("K En Ucuz"), "En ucuz rakip")], next(z),
-              sort=[(mea("K Gözlem"), "Descending")])]
+              proj(mea("K Gözlem"), "Gözlem"), proj(mea("K Aralık"), "Rakip fiyat aralığı"),
+              proj(mea("K Medyan"), "Medyan"), proj(mea("K En Ucuz"), "En ucuz rakip")], next(z),
+              sort=[(mea("K Gözlem"), "Descending")], widths=[90, 110, 70, 480, 110, 210], image=(460, 18))]
 p = PANEL["artislar"]
 radar += [panel_head("artislar", "Genel fiyat artışları"),
           text_card(p["x"] + 22, p["y"] + 44, p["w"] - 44, 22, "Artış Alt", 9.5, LIGHT3, next(z)),
@@ -572,7 +615,8 @@ radar += [panel_head("artislar", "Genel fiyat artışları"),
               proj(col("FiyatArtislari", "GecerliTarih"), "Tarih"), proj(col("FiyatArtislari", "Rakip"), "Rakip"),
               proj(col("FiyatArtislari", "ArtisAdi"), "Artış"), proj(col("FiyatArtislari", "LimanUlke"), "Liman"),
               proj(mea("Artış 20"), "20'"), proj(mea("Artış 40"), "40'"), proj(col("FiyatArtislari", "Durum"), "Durum")],
-              next(z), sort=[(col("FiyatArtislari", "GecerliTarih"), "Descending")])]
+              next(z), sort=[(col("FiyatArtislari", "GecerliTarih"), "Descending")],
+              widths=[100, 110, 90, 120, 70, 70, 100], font=10.5)]
 p = PANEL["usec"]
 radar += [panel_head("usec", "USEC · rakip 40' fiyatları", "USA-W rotası, rakip başına medyan, USD · turuncu = en ucuz"),
           visual(p["x"] + 12, p["y"] + 66, p["w"] - 24, p["h"] - 76, "clusteredBarChart", {
@@ -597,19 +641,14 @@ radar += [panel_head("notlar", "Sahadan notlar & sefer aksaklıkları"),
           dark_table(p["x"] + 16, p["y"] + 50, p["w"] - 32, p["h"] - 62, [
               proj(col("SahaNotlari", "Tarih"), "Tarih"), proj(col("SahaNotlari", "Tur"), "Tür"),
               proj(col("SahaNotlari", "Rakip"), "Rakip"), proj(col("SahaNotlari", "Aciklama"), "Detay"),
-              proj(col("SahaNotlari", "Etiket"), "Etiket"), proj(col("SahaNotlari", "KayitNo"), "#")],
-              next(z), sort=[(col("SahaNotlari", "Tarih"), "Descending")])]
+              proj(col("SahaNotlari", "Etiket"), "Etiket")],
+              next(z), sort=[(col("SahaNotlari", "Tarih"), "Descending")], widths=[90, 60, 100, 300, 110], font=10.5)]
 radar += [textbox(40, 1044, 1400, 24, [("Kaynak: Rakip ve Pazar Verileri (SharePoint, haftalık dosyalar) · Fiyatlar "
                                         "KurTablosu ile USD'ye çevrilir · \"2150 - 2350\" gibi aralıklar orta noktayla alınır",
                                         8.5, False, LIGHT3)], next(z)),
           text_card(1500, 1046, 380, 22, "Altbilgi Sağ", 8.5, LIGHT3, next(z))]
 
-detay = [textbox(40, 28, 900, 40, [("Rakip fiyat kayıtları · detay", 16, True, LIGHT)], next(z))]
-for i, (fld, x, w) in enumerate([(col("Servisler", "Servis"), 1452, 210), (col("Dosyalar", "Hafta"), 1676, 204)]):
-    detay.append(visual(x, 24, w, 48, "slicer", {"Values": {"projections": [proj(fld)]}}, objects={
-        "data": props(mode="Dropdown"), "header": props(show=False),
-        "items": props(fontColor=solid(LIGHT), background=solid(PANEL_BG), textSize=11),
-        "selection": props(singleSelect=i == 1)}, z=next(z), sort=[(fld, "Descending")] if i == 1 else None))
+detay = [textbox(40, 28, 900, 40, [("Rakip fiyat kayıtları · detay", 16, True, LIGHT)], next(z))] + slicers(26)
 detay.append(dark_table(40, 90, 1840, 950, [proj(col("RakipNavlun", c), d) for c, d in [
     ("KayitNo", "#"), ("Hafta", "Hafta"), ("Servis", "Servis"), ("Rakip", "Rakip"), ("POL", "POL"), ("POD", "POD"),
     ("PB", "PB"), ("Ham20", "20' (giriş)"), ("Ham40", "40' (giriş)"), ("Fiyat40USD", "40' USD"),

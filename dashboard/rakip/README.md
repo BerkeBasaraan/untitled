@@ -46,5 +46,5 @@ Her haftalık dosya pazarın tam fotoğrafıdır: satırlar her hafta yerinde g�
 ## Ölçüler hakkında
 
 - "Pazar yumuşak / dengeli / sıkı" eşikleri `Başlık` ölçüsünde: "yük arıyor" oranı %20 ve üstü yumuşak, %10–20 dengeli.
-- Fiyat koridoru en çok fiyat girilen 10 rotayı gösterir (en az 3 gözlem); `Koridorda` ölçüsünden değiştirilebilir.
+- Fiyat koridoru en çok fiyat girilen 8 rotayı gösterir (en az 3 gözlem); `Koridorda` ölçüsünden değiştirilebilir.
 - USEC grafiği `USEC Medyan 40` ölçüsündeki POD filtresiyle çalışır; başka bir rota için ölçüyü kopyalayıp POD'u değiştirin.

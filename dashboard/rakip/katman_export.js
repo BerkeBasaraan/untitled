@@ -66,7 +66,8 @@ const PAGE = "file://" + path.join(DIR, "rakip-panel.html");
   // 5) Power BI sayfa arka planı: fotoğraf + karartma + boş paneller + logo + KPI etiketleri (metinler Power BI'da)
   await page.goto(PAGE);
   await page.waitForTimeout(800);
-  await page.addStyleTag({ content: ".glass > *:not(.label), .hero, .brand > div:last-child, .filters, .footer {visibility:hidden!important} .kpi .label {color:transparent!important}" });
+  // Paneller düz renk: Power BI tablolarının ve metinlerinin zemin rengiyle (#1C1A18) birebir aynı olsun diye
+  await page.addStyleTag({ content: ".glass > *:not(.label), .hero, .brand > div:last-child, .filters, .footer {visibility:hidden!important} .kpi .label {color:transparent!important} .glass {background:#1C1A18!important; backdrop-filter:none!important; -webkit-backdrop-filter:none!important}" });
   await page.screenshot({ path: path.join(OUT, "pbi-arkaplan.png") });
 
   fs.copyFileSync(path.join(DIR, "..", "mockup", "teu-gemi-arkaplan.png"), path.join(OUT, "01-gemi-fotograf.png"));
