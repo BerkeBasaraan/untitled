@@ -12,6 +12,8 @@ import pandas as pd
 
 src = sys.argv[1]
 out = Path(sys.argv[2]) if len(sys.argv) > 2 else Path(__file__).with_name("ozet.json")
+# Göstermelik kur (1 birim = x USD). Gerçek dönüşüm Power Query'de yapılacak; o zamana kadar 1:1.
+KUR = {"USD": 1.0, "EUR": 1.0, "GBP": 1.0}
 RAKIP_ESLE = {"CULINES": "CUL LINES", "NCA (NORHT CAPE AGENCY)": "NCA", "HIKARU (FEVZI GANDUR)": "HIKARU"}
 
 
@@ -51,7 +53,8 @@ def tt(v):
 
 rn = sheet("Rakip Navlun", 3)
 rn["Rakip"] = rn["Rakip"].map(rakip)
-rn["F20"], rn["F40"] = rn["20'"].map(fiyat), rn["40'"].map(fiyat)
+rn["F20"] = rn["20'"].map(fiyat) * rn["PB"].map(KUR)
+rn["F40"] = rn["40'"].map(fiyat) * rn["PB"].map(KUR)
 rn["Kapali"] = rn[["20'", "40'"]].apply(lambda r: any(str(x).strip().lower() in ("kapalı", "yok") for x in r), axis=1)
 rn["TTg"] = rn["TT"].map(tt)
 rn["Yuk"] = rn["Yük Durumu"].replace({"sold out": "Overbooked"})
@@ -93,12 +96,12 @@ for (srv, pod), g in d.groupby(["Turkon İlgili Servis", "POD"]):
     if len(g) < 3:
         continue
     cheapest = g.loc[g.F40.idxmin(), "Rakip"]
-    kor.append({"servis": srv, "pod": pod, "pb": g.PB.mode()[0], "min": g.F40.min(), "med": g.F40.median(),
+    kor.append({"servis": srv, "pod": pod, "pb": "USD", "min": g.F40.min(), "med": g.F40.median(),
                 "max": g.F40.max(), "n": len(g), "en_ucuz": cheapest})
 o["koridor"] = sorted(kor, key=lambda r: (r["servis"], -r["med"]))
 
 # USEC: rakip bazında medyan 40' (USD)
-us = d[(d.POD == "USEC") & (d.PB == "USD")].groupby("Rakip")["F40"].agg(["median", "count"]).sort_values("median")
+us = d[d.POD == "USEC"].groupby("Rakip")["F40"].agg(["median", "count"]).sort_values("median")
 o["usec"] = [{"rakip": k, "f40": float(v["median"]), "n": int(v["count"])} for k, v in us.iterrows()]
 
 # Servis bazında pazar sinyalleri

@@ -17,7 +17,7 @@
   {
    "servis": "NWC-W",
    "pod": "WVN",
-   "pb": "EUR",
+   "pb": "USD",
    "min": 595.0,
    "med": 600.0,
    "max": 630.0,
@@ -27,7 +27,7 @@
   {
    "servis": "NWC-W",
    "pod": "BRV",
-   "pb": "EUR",
+   "pb": "USD",
    "min": 312.0,
    "med": 597.5,
    "max": 1348.0,
@@ -37,7 +37,7 @@
   {
    "servis": "NWC-W",
    "pod": "ANR",
-   "pb": "EUR",
+   "pb": "USD",
    "min": 289.0,
    "med": 595.0,
    "max": 1200.0,
@@ -47,7 +47,7 @@
   {
    "servis": "NWC-W",
    "pod": "FLX",
-   "pb": "GBP",
+   "pb": "USD",
    "min": 247.0,
    "med": 580.0,
    "max": 1200.0,
@@ -57,7 +57,7 @@
   {
    "servis": "NWC-W",
    "pod": "HAM",
-   "pb": "EUR",
+   "pb": "USD",
    "min": 291.0,
    "med": 580.0,
    "max": 1200.0,
