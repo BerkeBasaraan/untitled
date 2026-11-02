@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Rakip Pazar Radarı</title>
+<style>
+  :root {
+    --accent: #FF7A2F;
+    --accent-2: #F6B73C;
+    --good: #7BD88F;
+    --glass: rgba(22, 20, 18, 0.56);
+    --line: rgba(255, 255, 255, 0.12);
+    --text: #F5F2EE;
+    --text-2: rgba(245, 242, 238, 0.68);
+    --text-3: rgba(245, 242, 238, 0.44);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    width: 1920px; height: 1080px; overflow: hidden; position: relative;
+    background: #0B0A09; color: var(--text); font-family: Inter, "Segoe UI", sans-serif;
+  }
+  .photo { position: absolute; inset: 0; width: 1920px; height: 1080px; object-fit: cover; }
+  .shade {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(180deg, rgba(0,0,0,.70) 0%, rgba(0,0,0,.25) 14%, rgba(0,0,0,.15) 22%, rgba(0,0,0,.70) 34%, rgba(0,0,0,.88) 100%),
+      radial-gradient(120% 80% at 50% 20%, transparent 40%, rgba(0,0,0,.5) 100%);
+  }
+  .glass {
+    position: absolute; background: var(--glass); border: 1px solid var(--line); border-radius: 24px;
+    backdrop-filter: blur(22px) saturate(120%); -webkit-backdrop-filter: blur(22px) saturate(120%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 20px 50px rgba(0,0,0,.35);
+    padding: 20px 24px;
+  }
+  .pill {
+    display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 18px; border-radius: 20px;
+    font-size: 14px; font-weight: 500; color: var(--text-2);
+    background: rgba(20,18,16,.55); border: 1px solid var(--line);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  }
+  .pill.on { background: var(--accent); border-color: var(--accent); color: #1A0F08; font-weight: 600; }
+  h2 { font-size: 17px; font-weight: 600; }
+  .sub { font-size: 12.5px; color: var(--text-3); margin-top: 3px; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* Başlık */
+  .brand { position: absolute; left: 40px; top: 30px; display: flex; gap: 14px; align-items: center; }
+  .logo { width: 56px; height: 56px; border-radius: 50%; background: var(--accent); display: grid; place-items: center; }
+  .brand b { font-size: 19px; display: block; }
+  .brand span { font-size: 13px; color: var(--text-3); }
+  .filters { position: absolute; right: 40px; top: 38px; display: flex; gap: 8px; }
+  .hero { position: absolute; left: 40px; top: 150px; width: 1200px; }
+  .hero .week { font-size: 14px; font-weight: 600; color: var(--accent); letter-spacing: .08em; text-transform: uppercase; }
+  .hero h1 { font-size: 46px; font-weight: 600; letter-spacing: -.02em; line-height: 1.12; margin-top: 10px; }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .hero p { font-size: 18px; color: var(--text-2); margin-top: 12px; }
+
+  /* KPI */
+  .kpi { height: 140px; top: 316px; width: 355px; }
+  .kpi .label { font-size: 13px; color: var(--text-2); font-weight: 500; display: flex; justify-content: space-between; }
+  .kpi .value { font-size: 40px; font-weight: 600; letter-spacing: -.02em; margin-top: 10px; }
+  .kpi .value small { font-size: 18px; color: var(--text-2); font-weight: 500; margin-left: 4px; }
+  .kpi .foot { font-size: 12.5px; color: var(--text-3); margin-top: 6px; }
+  .tag { font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 10px; }
+  .tag.warn { background: rgba(246,183,60,.18); color: var(--accent-2); }
+  .tag.hot { background: rgba(255,122,47,.2); color: var(--accent); }
+  .tag.ok { background: rgba(123,216,143,.16); color: var(--good); }
+  .tag.mute { background: rgba(255,255,255,.08); color: var(--text-2); }
+
+  /* Tablolar ve listeler */
+  table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
+  th { text-align: left; font-weight: 500; color: var(--text-3); font-size: 11.5px; padding: 0 8px 6px; border-bottom: 1px solid var(--line); }
+  td { padding: 0 8px; height: 20.5px; border-bottom: 1px solid rgba(255,255,255,.05); white-space: nowrap; }
+  td.r, th.r { text-align: right; }
+  .feed { margin-top: 12px; display: flex; flex-direction: column; gap: 9px; }
+  .item { display: grid; grid-template-columns: 76px 1fr auto; gap: 12px; align-items: center; font-size: 13px; }
+  .item .d { font-size: 12px; color: var(--text-3); }
+  .item b { font-weight: 600; }
+  .item .t { color: var(--text-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .legend { display: flex; gap: 16px; font-size: 12px; color: var(--text-2); margin-top: 10px; }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+  .footer { position: absolute; left: 40px; right: 40px; top: 1050px; font-size: 11.5px; color: var(--text-3); display: flex; justify-content: space-between; }
+</style>
+</head>
+<body>
+<img class="photo" src="../mockup/teu-gemi-arkaplan.png" alt="">
+<div class="shade"></div>
+
+<div class="brand">
+  <div class="logo"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 12l5-3M12 4v2M20 12h-2M12 20v-2M4 12h2"/></svg></div>
+  <div><b>Rakip &amp; Pazar Radarı</b><span>Turkon satış istihbaratı · haftalık</span></div>
+</div>
+<div class="filters" id="filters"></div>
+
+<div class="hero">
+  <div class="week" id="week"></div>
+  <h1 id="headline"></h1>
+  <p id="subline"></p>
+</div>
+
+<div id="kpis"></div>
+
+<div class="glass" style="left:40px;top:472px;width:1120px;height:300px">
+  <h2>Pazar fiyat koridoru · 40'</h2>
+  <div class="sub">Rota başına rakip fiyatlarının en düşük – medyan – en yüksek değeri · çubuklar her satırın kendi aralığında ölçeklenir</div>
+  <table id="corridor"></table>
+</div>
+
+<div class="glass" style="left:1176px;top:472px;width:704px;height:300px">
+  <h2>Genel fiyat artışları</h2>
+  <div class="sub" id="artis-sub"></div>
+  <table id="increases"></table>
+</div>
+
+<div class="glass" style="left:40px;top:788px;width:552px;height:252px">
+  <h2>USEC · rakip 40' fiyatları</h2>
+  <div class="sub">USA-W rotası, rakip başına medyan, USD · turuncu = en ucuz</div>
+  <svg id="usec" width="504" height="176" style="margin-top:8px"></svg>
+</div>
+
+<div class="glass" style="left:608px;top:788px;width:552px;height:252px">
+  <h2>Servis bazında pazar sinyali</h2>
+  <div class="legend"><span><i style="background:var(--accent)"></i>Rakip yük arıyor</span><span><i style="background:var(--accent-2)"></i>Yetersiz ekipman</span></div>
+  <svg id="signals" width="504" height="160" style="margin-top:4px"></svg>
+</div>
+
+<div class="glass" style="left:1176px;top:788px;width:704px;height:252px">
+  <h2>Sahadan notlar &amp; sefer aksaklıkları</h2>
+  <div class="feed" id="feed"></div>
+</div>
+
+<div class="footer">
+  <span>Kaynak: Rakip ve Pazar Verileri (SharePoint, haftalık dosyalar) · Fiyatlar rotanın para biriminde · "2150 - 2350" gibi aralıklar orta noktayla alınır</span>
+  <span id="stamp"></span>
+</div>
+
+<script src="ozet.js"></script>
+<script>
+const O = window.OZET;
+const NS = "http://www.w3.org/2000/svg";
+const ACC = "#FF7A2F", ACC2 = "#F6B73C";
+const fmt = v => Math.round(v).toLocaleString("tr-TR");
+const pct = v => "%" + Math.round(v * 100);
+function el(tag, a, p, t) { const e = document.createElementNS(NS, tag); for (const k in a) e.setAttribute(k, a[k]); if (t != null) e.textContent = t; p.appendChild(e); return e; }
+
+/* Başlık ve filtreler */
+document.getElementById("filters").innerHTML =
+  ["Tümü", "USA-W", "NWC-W", "TRI-W", "TRI-E", "TEL-W"].map((s, i) => `<span class="pill${i ? "" : " on"}">${s}</span>`).join("") +
+  `<span class="pill" style="margin-left:8px">Hafta ${O.hafta} ⌄</span>`;
+document.getElementById("week").textContent = `Hafta ${O.hafta} · Pazar özeti`;
+const yukOran = O.yuk_ariyor / O.satir;
+document.getElementById("headline").innerHTML =
+  `Pazar yumuşak: rakip kayıtlarının <em>${pct(yukOran)}</em>'ünde<br>"yük arıyor" notu var`;
+const usecMin = O.usec[0];
+document.getElementById("subline").textContent =
+  `20' ekipman açığı ${O.ekipman_20} kayıtta bildirildi · USEC'te en ucuz 40' ${usecMin.rakip} ${fmt(usecMin.f40)} USD · ` +
+  `aktarmalı servisler ${Math.round(O.tt_aktarma - O.tt_direkt)} gün daha yavaş`;
+
+/* KPI kartları */
+const kpis = [
+  ["Takip edilen rakip", O.rakip, `${O.satir} fiyat kaydı`, `${O.rota} POL–POD rotası`, ["mute", "Kapsam"]],
+  ["Güncel fiyat oranı", pct(O.guncel_oran), "", `Son 2 haftada güncellenen · bu hafta ${O.bu_hafta} kayıt`, ["warn", "Takip"]],
+  ["Rakip yük arıyor", O.yuk_ariyor, "kayıt", `Fiyat kayıtlarının ${pct(yukOran)}'ü · ${O.overbooked} overbooked`, ["hot", "Fiyat baskısı"]],
+  ["Yetersiz ekipman", O.ekipman, "kayıt", `${O.ekipman_20} tanesi 20' · rakip yük alamıyor`, ["warn", "Fırsat"]],
+  ["Direkt servis avantajı", `${Math.round(O.tt_aktarma - O.tt_direkt)}`, "gün daha hızlı",
+   `Medyan TT ${O.tt_direkt} / ${O.tt_aktarma} gün · fiyat farkı ${O.direkt_prim >= 0 ? "+" : ""}${pct(O.direkt_prim)}`, ["ok", "Satış argümanı"]],
+];
+document.getElementById("kpis").innerHTML = kpis.map(([label, v, unit, foot, [cls, tag]], i) =>
+  `<div class="glass kpi" style="left:${40 + i * 371}px">
+     <div class="label">${label}<span class="tag ${cls}">${tag}</span></div>
+     <div class="value num">${v}<small>${unit}</small></div>
+     <div class="foot">${foot}</div>
+   </div>`).join("");
+
+/* Fiyat koridoru: en çok gözlemi olan 10 rota */
+const rows = [...O.koridor].sort((a, b) => b.n - a.n).slice(0, 10)
+  .sort((a, b) => a.servis.localeCompare(b.servis) || b.med - a.med);
+const BAR = 420;
+document.getElementById("corridor").innerHTML =
+  `<tr><th>Servis</th><th>POD</th><th class="r">Gözlem</th><th>Rakip fiyat aralığı</th><th class="r">Medyan</th><th>En ucuz</th></tr>` +
+  rows.map(r => {
+    const span = r.max - r.min || 1, m = (r.med - r.min) / span * BAR;
+    return `<tr><td>${r.servis}</td><td><b>${r.pod}</b></td><td class="r num" style="color:var(--text-3)">${r.n}</td>
+      <td><svg width="${BAR + 110}" height="14">
+        <text x="0" y="11" font-size="11" fill="rgba(245,242,238,.44)">${fmt(r.min)}</text>
+        <rect x="44" y="5" width="${BAR}" height="4" rx="2" fill="rgba(255,255,255,.14)"/>
+        <rect x="44" y="5" width="${m}" height="4" rx="2" fill="${ACC}" opacity=".85"/>
+        <circle cx="${44 + m}" cy="7" r="5" fill="#fff" stroke="${ACC}" stroke-width="2"/>
+        <text x="${BAR + 52}" y="11" font-size="11" fill="rgba(245,242,238,.44)">${fmt(r.max)}</text></svg></td>
+      <td class="r num"><b>${fmt(r.med)}</b> <span style="color:var(--text-3)">${r.pb}</span></td>
+      <td style="color:${ACC}">${r.en_ucuz}</td></tr>`;
+  }).join("");
+
+/* Fiyat artışları */
+document.getElementById("artis-sub").textContent =
+  `Toplam ${O.artis_sayi} duyuru · ${O.artis_ertelendi} ertelendi · en yeni 6 kayıt (başlangıç ya da ertelenen tarih)`;
+document.getElementById("increases").innerHTML =
+  `<tr><th>Tarih</th><th>Rakip</th><th>Artış</th><th class="r">20'</th><th class="r">40'</th><th>Durum</th></tr>` +
+  O.artis.map(a => `<tr style="height:30px"><td class="num" style="color:var(--text-2)">${a.tarih}</td><td><b>${a.rakip}</b></td>
+    <td>${a.ad} <span style="color:var(--text-3)">· ${a.liman}</span></td>
+    <td class="r num">+${fmt(a.f20)}</td><td class="r num" style="color:${ACC}">+${fmt(a.f40)}</td>
+    <td><span class="tag ${a.durum === "Ertelendi" ? "warn" : "mute"}">${a.durum}</span></td></tr>`).join("");
+document.querySelectorAll("#increases td").forEach(td => (td.style.height = "31px"));
+
+/* USEC rakip fiyatları */
+(() => {
+  const s = document.getElementById("usec"), L = 78, W = 504, rh = 176 / O.usec.length;
+  const lo = 2400, hi = Math.max(...O.usec.map(r => r.f40)) * 1.04, sx = v => L + (v - lo) / (hi - lo) * (W - L - 60);
+  const min = O.usec[0].f40;
+  O.usec.forEach((r, i) => {
+    const y = i * rh + 3, h = rh - 7, cheap = r.f40 === min;
+    el("text", { x: 0, y: y + h / 2 + 4, "font-size": 12, fill: cheap ? "#fff" : "rgba(245,242,238,.68)", "font-weight": cheap ? 600 : 400 }, s, r.rakip);
+    el("rect", { x: L, y, width: sx(r.f40) - L, height: h, rx: 4, fill: cheap ? ACC : "rgba(255,255,255,.22)" }, s);
+    el("text", { x: sx(r.f40) + 8, y: y + h / 2 + 4, "font-size": 12, fill: "#F5F2EE", "font-weight": cheap ? 600 : 400 }, s, fmt(r.f40));
+  });
+})();
+
+/* Servis sinyalleri: satırların yüzdesi */
+(() => {
+  const s = document.getElementById("signals"), L = 64, W = 504, rows = O.sinyal, rh = 160 / rows.length;
+  const sx = v => v * (W - L - 50) / 0.4;
+  rows.forEach((r, i) => {
+    const y = i * rh + 4, a = r.yuk_ariyor / r.satir, b = r.ekipman / r.satir;
+    el("text", { x: 0, y: y + 13, "font-size": 12, fill: "rgba(245,242,238,.68)" }, s, r.servis);
+    el("rect", { x: L, y, width: Math.max(sx(a), 2), height: 9, rx: 3, fill: ACC }, s);
+    el("text", { x: L + Math.max(sx(a), 2) + 6, y: y + 9, "font-size": 11, fill: "#F5F2EE" }, s, pct(a));
+    el("rect", { x: L, y: y + 13, width: Math.max(sx(b), 2), height: 9, rx: 3, fill: ACC2 }, s);
+    el("text", { x: L + Math.max(sx(b), 2) + 6, y: y + 22, "font-size": 11, fill: "#F5F2EE" }, s, pct(b));
+  });
+})();
+
+/* Saha notları + sefer aksaklıkları */
+document.getElementById("feed").innerHTML =
+  O.notlar.slice(0, 2).map(n => `<div class="item"><span class="d">${n.tarih} · Not</span>
+    <span class="t"><b>${n.rakip}</b> · ${n.metin}</span><span class="tag mute">${n.yer}</span></div>`).join("") +
+  O.gemi_aks.map(g => `<div class="item"><span class="d">Hafta ${g.hafta}</span>
+    <span class="t"><b>${g.rakip}</b>${g.gemi ? " · " + g.gemi : ""}</span><span class="tag hot">${g.durum}</span></div>`).join("");
+document.getElementById("stamp").textContent = `Hafta ${O.hafta} verisi · ${O.satir} rakip fiyat kaydı`;
+</script>
+</body>
+</html>
